@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation — UniversalDL{% endblock %}
+
+{% block extra_css %}
+<style>
+  .docs-layout {
+    padding: 70px 0;
+  }
+  .docs-sidebar {
+    position: sticky;
+    top: 90px;
+  }
+  .docs-sidebar .nav-link {
+    color: var(--color-text-muted);
+  }
+  .docs-sidebar .nav-link.active {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+  .docs-section {
+    margin-bottom: 60px;
+  }
+  .docs-section h2 {
+    margin-bottom: 16px;
+  }
+  .code-wrap {
+    position: relative;
+    margin-top: 12px;
+  }
+  .copy-code-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  pre {
+    background: var(--color-surface-2);
+    padding: 16px;
+    border-radius: 12px;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="docs-layout">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">
+        <div class="docs-sidebar">
+          <h5>Documentation</h5>
+          <input type="text" class="form-control form-control-sm mb-3" id="docs-search" placeholder="Search docs">
+          <nav class="nav flex-column" id="docsNav">
+            <span class="text-muted-custom small mt-2">Getting Started</span>
+            <a class="nav-link" href="#quick-start">Quick Start Guide</a>
+            <a class="nav-link" href="#no-account">No-Account Download</a>
+            <a class="nav-link" href="#create-account">Create an Account</a>
+            <a class="nav-link" href="#browser-extension">Install Browser Extension</a>
+            <a class="nav-link" href="#pwa-setup">Mobile PWA Setup</a>
+
+            <span class="text-muted-custom small mt-3">Download Features</span>
+            <a class="nav-link" href="#single-download">Single URL Download</a>
+            <a class="nav-link" href="#batch-download">Batch Downloads</a>
+            <a class="nav-link" href="#quality-selection">Quality Selection</a>
+            <a class="nav-link" href="#format-selection">Format Selection</a>
+            <a class="nav-link" href="#subtitle-downloads">Subtitle Downloads</a>
+            <a class="nav-link" href="#metadata-chapters">Metadata and Chapters</a>
+
+            <span class="text-muted-custom small mt-3">Subscription Monitor</span>
+            <a class="nav-link" href="#subscriptions">What Are Subscriptions</a>
+            <a class="nav-link" href="#add-channel">Adding a Channel</a>
+            <a class="nav-link" href="#frequency-settings">Frequency Settings</a>
+            <a class="nav-link" href="#manage-subscriptions">Managing Subscriptions</a>
+
+            <span class="text-muted-custom small mt-3">API Reference</span>
+            <a class="nav-link" href="#api-auth">Authentication</a>
+            <a class="nav-link" href="#api-analyze">Analyze Endpoint</a>
+            <a class="nav-link" href="#api-download">Download Endpoint</a>
+            <a class="nav-link" href="#api-jobs">Job Status Endpoint</a>
+            <a class="nav-link" href="#api-batch">Batch Endpoint</a>
+            <a class="nav-link" href="#api-history">History Endpoint</a>
+            <a class="nav-link" href="#api-subscriptions">Subscriptions Endpoint</a>
+            <a class="nav-link" href="#api-formats">Formats Endpoint</a>
+            <a class="nav-link" href="#api-platforms">Platforms Endpoint</a>
+            <a class="nav-link" href="#api-errors">Error Responses</a>
+            <a class="nav-link" href="#api-limits">Rate Limits</a>
+
+            <span class="text-muted-custom small mt-3">Browser Extension</span>
+            <a class="nav-link" href="#chrome-install">Installing on Chrome</a>
+            <a class="nav-link" href="#firefox-install">Installing on Firefox</a>
+            <a class="nav-link" href="#extension-usage">Using the Extension</a>
+
+            <span class="text-muted-custom small mt-3">FAQ</span>
+            <a class="nav-link" href="#faq">Common Issues</a>
+            <a class="nav-link" href="#faq-privacy">Privacy and Security</a>
+            <a class="nav-link" href="#faq-billing">Billing Questions</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="col-lg-9">
+        <div data-bs-spy="scroll" data-bs-target="#docsNav" data-bs-offset="100" tabindex="0">
+          <section class="docs-section" id="quick-start">
+            <h2>Quick Start Guide</h2>
+            <ol class="text-muted-custom">
+              <li>Open UniversalDL and paste a URL into the download bar.</li>
+              <li>Select your preferred quality and format.</li>
+              <li>Click Download and save the file to your device.</li>
+            </ol>
+            <div class="code-wrap">
+              <button class="btn btn-sm btn-outline-primary copy-code-btn" type="button">Copy</button>
+              <pre><code>https://youtube.com/watch?v=dQw4w9WgXcQ
+https://www.tiktok.com/@user/video/1234567890
+https://www.instagram.com/reel/XXXXXXXX/</code></pre>
+            </div>
+          </section>
+
+          <section class="docs-section" id="no-account">
+            <h2>No-Account Download</h2>
+            <p class="text-muted-custom">You can download without registering. Paste a URL on the download page and UniversalDL will analyze the content instantly. The free plan supports up to 1080p quality and small batch limits.</p>
+          </section>
+
+          <section class="docs-section" id="create-account">
+            <h2>Create an Account</h2>
+            <p class="text-muted-custom">Create a free account to unlock download history, batch queues, and account settings. Pro users receive higher quality limits and API access.</p>
+          </section>
+
+          <section class="docs-section" id="browser-extension">
+            <h2>Install Browser Extension</h2>
+            <p class="text-muted-custom">The extension adds a download button directly on supported pages. Click it to open UniversalDL with the URL pre-filled.</p>
+          </section>
+
+          <section class="docs-section" id="pwa-setup">
+            <h2>Mobile PWA Setup</h2>
+            <p class="text-muted-custom">Install the PWA from your browser menu. It works offline for queued downloads and integrates with the share sheet.</p>
+          </section>
+
+          <section class="docs-section" id="single-download">
+            <h2>Single URL Download</h2>
+            <p class="text-muted-custom">Single downloads analyze the URL and show available qualities. Choose a format and click Download.</p>
+          </section>
+
+          <section class="docs-section" id="batch-download">
+            <h2>Batch Downloads</h2>
+            <p class="text-muted-custom">Batch mode accepts pasted URLs or a text file. The queue processes items in parallel and tracks each job separately.</p>
+          </section>
+
+          <section class="docs-section" id="quality-selection">
+            <h2>Quality Selection</h2>
+            <p class="text-muted-custom">Quality choices depend on the source platform. Pro users can select 4K and 8K when available.</p>
+          </section>
+
+          <section class="docs-section" id="format-selection">
+            <h2>Format Selection</h2>
+            <p class="text-muted-custom">Choose MP4, MKV, WebM, MP3, FLAC, M4A, or WAV. Server side conversion uses FFmpeg for consistent results.</p>
+          </section>
+
+          <section class="docs-section" id="subtitle-downloads">
+            <h2>Subtitle Downloads</h2>
+            <p class="text-muted-custom">Select subtitle languages and choose soft embed or hard burn-in. UniversalDL supports srt, vtt, and ass.</p>
+          </section>
+
+          <section class="docs-section" id="metadata-chapters">
+            <h2>Metadata and Chapters</h2>
+            <p class="text-muted-custom">Embed titles, artwork, and chapters into your media files so they stay organized in media libraries.</p>
+          </section>
+
+          <section class="docs-section" id="subscriptions">
+            <h2>What Are Subscriptions</h2>
+            <p class="text-muted-custom">Subscriptions monitor channels for new content and download items automatically.</p>
+          </section>
+
+          <section class="docs-section" id="add-channel">
+            <h2>Adding a Channel</h2>
+            <p class="text-muted-custom">Paste the channel URL, choose a frequency, and save. UniversalDL will track new items.</p>
+          </section>
+
+          <section class="docs-section" id="frequency-settings">
+            <h2>Frequency Settings</h2>
+            <p class="text-muted-custom">Choose hourly, daily, or weekly checks based on how often the channel updates.</p>
+          </section>
+
+          <section class="docs-section" id="manage-subscriptions">
+            <h2>Managing Subscriptions</h2>
+            <p class="text-muted-custom">Pause, delete, or update subscriptions from your dashboard. Duplicate content is skipped automatically.</p>
+          </section>
+
+          <section class="docs-section" id="api-auth">
+            <h2>Authentication</h2>
+            <p class="text-muted-custom">API access requires a Pro plan. Generate a key in Settings → API Keys.</p>
+            <div class="code-wrap">
+              <button class="btn btn-sm btn-outline-primary copy-code-btn" type="button">Copy</button>
+              <pre><code>Authorization: Bearer YOUR_API_KEY_HERE</code></pre>
+            </div>
+          </section>
+
+          <section class="docs-section" id="api-analyze">
+            <h2>POST /api/v1/analyze</h2>
+            <p class="text-muted-custom">Analyze a URL and return available formats and qualities.</p>
+            <div class="code-wrap">
+              <button class="btn btn-sm btn-outline-primary copy-code-btn" type="button">Copy</button>
+              <pre><code>curl -X POST https://universaldl.com/api/v1/analyze \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://youtube.com/watch?v=dQw4w9WgXcQ"}'</code></pre>
+            </div>
+            <div class="code-wrap">
+              <button class="btn btn-sm btn-outline-primary copy-code-btn" type="button">Copy</button>
+              <pre><code>{
+  "platform": "youtube",
+  "title": "Example",
+  "qualities": ["4K", "1080p", "720p"],
+  "formats": ["mp4", "mkv", "mp3"]
+}</code></pre>
+            </div>
+          </section>
+
+          <section class="docs-section" id="api-download">
+            <h2>POST /api/v1/download</h2>
+            <p class="text-muted-custom">Start a download job.</p>
+            <div class="code-wrap">
+              <button class="btn btn-sm btn-outline-primary copy-code-btn" type="button">Copy</button>
+              <pre><code>curl -X POST https://universaldl.com/api/v1/download \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://youtube.com/watch?v=dQw4w9WgXcQ",
+    "quality": "best",
+    "format": "mp4",
+    "subtitle_language": "en",
+    "subtitle_embed": false
+  }'</code></pre>
+            </div>
+          </section>
+
+          <section class="docs-section" id="api-jobs">
+            <h2>GET /api/v1/jobs/&lt;job_id&gt;</h2>
+            <p class="text-muted-custom">Poll the status of a download job. Status values include queued, analyzing, downloading, converting, complete, failed, and cancelled.</p>
+          </section>
+
+          <section class="docs-section" id="api-batch">
+            <h2>POST /api/v1/batch</h2>
+            <p class="text-muted-custom">Submit multiple URLs in one request. Use GET /api/v1/queue/&lt;batch_id&gt; to monitor status.</p>
+          </section>
+
+          <section class="docs-section" id="api-history">
+            <h2>GET /api/v1/history</h2>
+            <p class="text-muted-custom">Query params: page, per_page, platform, status.</p>
+          </section>
+
+          <section class="docs-section" id="api-subscriptions">
+            <h2>/api/v1/subscriptions</h2>
+            <p class="text-muted-custom">Use GET, POST, and DELETE to manage subscription monitors.</p>
+          </section>
+
+          <section class="docs-section" id="api-formats">
+            <h2>GET /api/v1/formats</h2>
+            <p class="text-muted-custom">Returns all supported formats for downloads.</p>
+          </section>
+
+          <section class="docs-section" id="api-platforms">
+            <h2>GET /api/v1/platforms</h2>
+            <p class="text-muted-custom">Returns all supported platforms with status labels.</p>
+          </section>
+
+          <section class="docs-section" id="api-errors">
+            <h2>Error Responses</h2>
+            <p class="text-muted-custom">Standard error format includes error and message. Common codes: missing_api_key, invalid_api_key, limit_exceeded, quality_limit, batch_limit, pro_required, validation_error.</p>
+          </section>
+
+          <section class="docs-section" id="api-limits">
+            <h2>Rate Limits</h2>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Endpoint</th>
+                    <th>Limit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>/api/v1/analyze</td><td>60 per minute per API key</td></tr>
+                  <tr><td>/api/v1/download</td><td>200 per hour per API key</td></tr>
+                  <tr><td>/api/v1/batch</td><td>20 per hour per API key</td></tr>
+                  <tr><td>All others</td><td>300 per minute per API key</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="docs-section" id="chrome-install">
+            <h2>Installing on Chrome</h2>
+            <p class="text-muted-custom">Open the Chrome Web Store link, click Add to Chrome, and pin the extension for easy access.</p>
+          </section>
+
+          <section class="docs-section" id="firefox-install">
+            <h2>Installing on Firefox</h2>
+            <p class="text-muted-custom">Install from the Firefox Add-ons store and allow the minimal permissions.</p>
+          </section>
+
+          <section class="docs-section" id="extension-usage">
+            <h2>Using the Extension</h2>
+            <p class="text-muted-custom">The extension detects supported pages and opens UniversalDL with the URL already filled in.</p>
+          </section>
+
+          <section class="docs-section" id="faq">
+            <h2>FAQ</h2>
+            <div class="accordion" id="docsFaq">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df1"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#dfa1">Platform X stopped working</button></h2>
+                <div id="dfa1" class="accordion-collapse collapse show" data-bs-parent="#docsFaq"><div class="accordion-body">Check the Platforms page for status. If it shows Degraded or Down, we are already working on a fix.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df2"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa2">My download is stuck at 0 percent</button></h2>
+                <div id="dfa2" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">Large jobs can take time to analyze. Wait a minute, then retry. If it persists, the platform might have changed its delivery.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df3"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa3">Large file downloads</button></h2>
+                <div id="dfa3" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">Large files are streamed to your device. Make sure your connection is stable and avoid closing the page during download.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df4"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa4">Can I download DRM content</button></h2>
+                <div id="dfa4" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">No. DRM protected content is intentionally blocked to respect content protection systems.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df5"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa5">Why are some qualities missing</button></h2>
+                <div id="dfa5" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">Only qualities exposed by the source platform appear. If the platform limits quality, UniversalDL cannot exceed it.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df6"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa6">How do I use batch downloads</button></h2>
+                <div id="dfa6" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">Open Batch Download, paste multiple URLs or upload a text file, and submit to the queue.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df7"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa7">Does UniversalDL store my files</button></h2>
+                <div id="dfa7" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">No. Files are delivered directly to your device and removed from temporary storage quickly.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df8"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa8">What if a platform needs login</button></h2>
+                <div id="dfa8" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">UniversalDL does not log in to platforms. Private or members only content is not supported.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df9"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa9">Can I automate with the API</button></h2>
+                <div id="dfa9" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">Yes. Use the API to analyze, download, and monitor jobs. Webhooks can notify your system on completion.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="df10"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dfa10">How do I report a bug</button></h2>
+                <div id="dfa10" class="accordion-collapse collapse" data-bs-parent="#docsFaq"><div class="accordion-body">Use the Contact page and select Bug Report. Include the URL and error message if possible.</div></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="docs-section" id="faq-privacy">
+            <h2>Privacy and Security</h2>
+            <p class="text-muted-custom">UniversalDL uses encrypted sessions, CSRF protection, and bcrypt hashing. We never store media files or sell user data.</p>
+          </section>
+
+          <section class="docs-section" id="faq-billing">
+            <h2>Billing Questions</h2>
+            <p class="text-muted-custom">Payments are processed by Razorpay in INR. Your Pro access lasts for the full paid period.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+  (function () {
+    var searchInput = document.getElementById("docs-search");
+    var links = document.querySelectorAll("#docsNav .nav-link");
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        var query = searchInput.value.toLowerCase();
+        links.forEach(function (link) {
+          var text = link.textContent.toLowerCase();
+          link.classList.toggle("d-none", query && text.indexOf(query) === -1);
+        });
+      });
+    }
+
+    var copyButtons = document.querySelectorAll(".copy-code-btn");
+    copyButtons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var code = btn.parentElement.querySelector("code");
+        if (!code || !navigator.clipboard) {
+          return;
+        }
+        navigator.clipboard.writeText(code.textContent).then(function () {
+          btn.textContent = "Copied";
+          setTimeout(function () {
+            btn.textContent = "Copy";
+          }, 2000);
+        });
+      });
+    });
+  })();
+</script>
+{% endblock %}

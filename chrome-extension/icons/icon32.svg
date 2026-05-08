@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="UniversalDL icon 32">
+  <rect width="32" height="32" rx="6" fill="#E94560"/>
+  <path d="M16 7V18" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+  <path d="M11.5 14.5L16 19L20.5 14.5" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="10" y="22" width="12" height="2.5" rx="1.2" fill="#FFFFFF"/>
+</svg>

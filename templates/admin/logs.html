@@ -1,0 +1,106 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/pagination.html" import render_pagination %}
+
+{% block admin_title %}Audit Logs{% endblock %}
+
+{% block admin_content %}
+  <div class="card p-3 mb-3">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-12 col-md-3">
+        <label class="form-label">Action</label>
+        <select class="form-select" name="action">
+          <option value="">All actions</option>
+          {% for action in action_types %}
+            <option value="{{ action }}" {% if current_filters.get('action') == action %}selected{% endif %}>{{ action }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label">User email</label>
+        <input type="text" class="form-control" name="user_search" value="{{ current_filters.get('user_search', '') }}" placeholder="Search by email">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label">Date from</label>
+        <input type="date" class="form-control" name="date_from" value="{{ current_filters.get('date_from', '') }}">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label">Date to</label>
+        <input type="date" class="form-control" name="date_to" value="{{ current_filters.get('date_to', '') }}">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label">IP address</label>
+        <input type="text" class="form-control" name="ip_filter" value="{{ current_filters.get('ip_filter', '') }}" placeholder="IP filter">
+      </div>
+      <div class="col-6 col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <a class="btn btn-outline-secondary w-100" href="{{ url_for('admin.admin_logs') }}">Clear</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+    <div class="small text-muted-custom">Showing {{ total_matching }} matching logs</div>
+    {% for action, count in action_breakdown[:5] %}
+      <span class="badge bg-surface-2 text-muted-custom">{{ action }}: {{ count }}</span>
+    {% endfor %}
+  </div>
+
+  <div class="card p-3">
+    <div class="table-responsive">
+      <table class="table admin-table table-sm mb-0">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Action</th>
+            <th>User</th>
+            <th>IP</th>
+            <th>Resource</th>
+            <th class="text-end">Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+            <tr>
+              <td title="{{ log.created_at }}">{{ log.created_at | timeago }}</td>
+              <td><span class="action-badge {{ log.badge_class }}">{{ log.action }}</span></td>
+              <td>
+                {% if log.user %}
+                  {{ log.user.email }}
+                {% else %}
+                  <span class="text-muted-custom">Anonymous</span>
+                {% endif %}
+              </td>
+              <td title="{{ log.ip_address }}">{{ log.masked_ip }}</td>
+              <td class="font-mono">{{ log.resource_id | string | truncate(8, True, '') if log.resource_id else '—' }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary view-log-detail-btn" data-log-id="{{ log.id }}">View</button>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center text-muted-custom">No logs found</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    {{ render_pagination(pagination, 'admin.admin_logs', params={'action': current_filters.get('action', ''), 'user_search': current_filters.get('user_search', ''), 'date_from': current_filters.get('date_from', ''), 'date_to': current_filters.get('date_to', ''), 'ip_filter': current_filters.get('ip_filter', '')}) }}
+  </div>
+
+  <div class="modal fade" id="logDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Log Entry Detail</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <pre class="font-mono">{}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

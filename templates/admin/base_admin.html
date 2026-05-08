@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block body_attrs %}data-page="{{ request.endpoint }}"{% endblock %}
+
+{% block content %}
+  <div class="admin-layout d-flex">
+    <aside class="admin-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
+      <div class="admin-sidebar-header">
+        <div class="admin-sidebar-heading" id="adminSidebarLabel">Admin Panel</div>
+        <div class="small text-muted-custom">{{ current_user.email }}</div>
+      </div>
+      <div class="py-3">
+        <nav class="nav nav-pills flex-column">
+          <a class="nav-link {% if request.endpoint == 'admin.admin_dashboard' %}active{% endif %}" href="{{ url_for('admin.admin_dashboard') }}">
+            <i class="bi bi-house"></i>
+            Overview
+          </a>
+          <a class="nav-link {% if request.endpoint and 'admin_extractors' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.admin_extractors') }}">
+            <i class="bi bi-gear"></i>
+            Extractors
+          </a>
+          <a class="nav-link {% if request.endpoint and 'admin_users' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.admin_users') }}">
+            <i class="bi bi-people"></i>
+            Users
+          </a>
+          <a class="nav-link {% if request.endpoint and 'admin_queue' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.admin_queue') }}">
+            <i class="bi bi-stack"></i>
+            Queue Monitor
+          </a>
+          <a class="nav-link {% if request.endpoint and 'admin_logs' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.admin_logs') }}">
+            <i class="bi bi-journal-text"></i>
+            Audit Logs
+          </a>
+          <a class="nav-link {% if request.endpoint and 'admin_settings' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.admin_settings') }}">
+            <i class="bi bi-sliders"></i>
+            Settings
+          </a>
+        </nav>
+        <hr class="border-custom mx-3">
+        <div class="px-3 small text-muted-custom">Quick Links</div>
+        <nav class="nav nav-pills flex-column mt-2">
+          <a class="nav-link" href="/">
+            <i class="bi bi-box-arrow-up-right"></i>
+            Back to Main Site
+          </a>
+          <a class="nav-link" href="/docs">
+            <i class="bi bi-file-text"></i>
+            API Documentation
+          </a>
+        </nav>
+      </div>
+      <div class="admin-sidebar-footer text-muted-custom">UniversalDL v{{ app_version }}</div>
+    </aside>
+
+    <div class="admin-content">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-primary admin-toggle-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar">
+            <i class="bi bi-list"></i>
+          </button>
+          <div>
+            <div class="text-muted-custom small">Admin</div>
+            <h1 class="h4 m-0">{% block admin_title %}{% endblock %}</h1>
+          </div>
+        </div>
+        <div>{% block admin_actions %}{% endblock %}</div>
+      </div>
+
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_dashboard') }}">Admin</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ self.admin_title() }}</li>
+        </ol>
+      </nav>
+
+      {% block admin_content %}{% endblock %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ super() }}
+  <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

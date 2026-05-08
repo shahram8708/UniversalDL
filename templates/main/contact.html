@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Contact & Support — UniversalDL{% endblock %}
+
+{% block extra_css %}
+<style>
+  .contact-hero {
+    padding: 70px 0 30px;
+  }
+  .support-card {
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 20px;
+    background: var(--color-surface);
+    margin-bottom: 20px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="contact-hero">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <h1>Get in Touch</h1>
+        <p class="text-muted-custom">Questions, bugs, feature requests, or billing issues — we are here.</p>
+        {% if request.args.get('sent') %}
+          <div class="alert alert-success">✓ Message sent! We will respond to {{ request.args.get('email', '') }} within 48 hours.</div>
+        {% endif %}
+        <form method="POST" action="/contact" class="card p-4 mt-3">
+          {{ form.hidden_tag() }}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">{{ form.name.label.text }}</label>
+              {{ form.name(class="form-control") }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ form.email.label.text }}</label>
+              {{ form.email(class="form-control") }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ form.subject.label.text }}</label>
+              {{ form.subject(class="form-select") }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ form.message.label.text }}</label>
+              {{ form.message(class="form-control", rows="10", id="contact-message") }}
+              <div class="d-flex justify-content-between text-muted-custom small mt-1">
+                <span>Min 20 characters, max 5000</span>
+                <span id="message-count">0 / 5000</span>
+              </div>
+            </div>
+            <div class="col-12">
+              {{ form.submit(class="btn btn-primary w-100", data_btn_loader="true", data_loading_text="Sending message...") }}
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-lg-4">
+        <div class="support-card">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-envelope"></i>
+            <h5 class="mb-0">Email Support</h5>
+          </div>
+          <p class="text-muted-custom">support@universaldl.com</p>
+          <p class="text-muted-custom small">Free users: Community support</p>
+          <p class="text-muted-custom small">Pro users: 48 hour response</p>
+        </div>
+        <div class="support-card">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-chat-dots"></i>
+            <h5 class="mb-0">Community Discord</h5>
+          </div>
+          <p class="text-muted-custom">Join our community for tips, help, and announcements.</p>
+          <a href="https://discord.com" class="text-accent">Join Discord Server →</a>
+          <div class="text-muted-custom small mt-2">Response time: usually within a few hours</div>
+        </div>
+        <div class="support-card">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-book"></i>
+            <h5 class="mb-0">Check the Docs First</h5>
+          </div>
+          <p class="text-muted-custom">Most questions are answered in our documentation.</p>
+          <a href="/docs" class="text-accent">View Documentation →</a><br>
+          <a href="/docs#faq" class="text-accent">Common issues →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-surface-2">
+  <div class="container">
+    <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+    <div class="accordion" id="contactFaq">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q1">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a1">A platform stopped working. What do I do?</button>
+        </h2>
+        <div id="a1" class="accordion-collapse collapse show" data-bs-parent="#contactFaq">
+          <div class="accordion-body">Check the platforms page for current status. If a platform shows Degraded or Down, we are working on a fix. You can also submit a bug report using the form above.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q2">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2">My download is stuck. How do I fix it?</button>
+        </h2>
+        <div id="a2" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+          <div class="accordion-body">Try cancelling and re-downloading. If it stays at analyzing, the platform may have changed. Check status or submit a bug report.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q3">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3">Why can&#39;t I download this video? It says DRM-protected.</button>
+        </h2>
+        <div id="a3" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+          <div class="accordion-body">DRM protected content cannot be downloaded by UniversalDL or any legal tool. We respect content protection systems.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q4">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a4">I was charged but my Pro plan isn&#39;t activated.</button>
+        </h2>
+        <div id="a4" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+          <div class="accordion-body">Contact support immediately with your Razorpay payment ID that starts with pay_. We will activate your plan within 24 hours.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q5">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a5">How do I cancel my Pro subscription?</button>
+        </h2>
+        <div id="a5" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+          <div class="accordion-body">Pro plans are one time payments per period and do not auto renew. Access continues until the expiry date.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q6">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a6">Is it legal to download this content?</button>
+        </h2>
+        <div id="a6" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+          <div class="accordion-body">UniversalDL is for personal archiving of publicly accessible content. Users are responsible for compliance with platform terms and local laws.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q7">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a7">How do I report a copyright violation?</button>
+        </h2>
+        <div id="a7" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+          <div class="accordion-body">UniversalDL does not host media content. For platform content issues, contact the originating platform.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q8">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a8">Can I get a refund?</button>
+        </h2>
+        <div id="a8" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+          <div class="accordion-body">We do not offer refunds on Pro plan payments. If you have a technical issue, contact support and we will help.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+  (function () {
+    var message = document.getElementById("contact-message");
+    var counter = document.getElementById("message-count");
+    if (!message || !counter) {
+      return;
+    }
+    var updateCount = function () {
+      counter.textContent = message.value.length + " / 5000";
+    };
+    message.addEventListener("input", updateCount);
+    updateCount();
+  })();
+</script>
+{% endblock %}

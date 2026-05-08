@@ -1,0 +1,45 @@
+{% from 'components/platform_badge.html' import platform_badge %}
+
+{% macro download_card(job) %}
+  {% set status_class = {
+    'queued': 'status-disabled',
+    'analyzing': 'status-info',
+    'downloading': 'status-info',
+    'converting': 'status-degraded',
+    'complete': 'status-active',
+    'failed': 'status-down',
+    'cancelled': 'status-disabled'
+  }.get(job.status, 'status-disabled') %}
+  <div class="card download-card">
+    <div class="card-body d-flex flex-column flex-md-row gap-3 align-items-md-center">
+      <div class="d-flex align-items-center gap-3">
+        {% if job.thumbnail_url %}
+          <img src="{{ job.thumbnail_url }}" alt="{{ job.title|default('Thumbnail') }}" width="50" height="50" class="rounded">
+        {% else %}
+          <div class="d-flex align-items-center justify-content-center bg-surface-2 rounded size-50">
+            <i class="bi bi-play-btn"></i>
+          </div>
+        {% endif %}
+        <div>
+          <h6 class="mb-1" title="{{ job.title|default('Untitled') }}">{{ job.title|default('Untitled')|truncate(60) }}</h6>
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            {{ platform_badge(job.platform or 'generic') }}
+            <span class="status-badge status-disabled">{{ job.selected_quality or 'Best' }}</span>
+            <span class="status-badge status-disabled">{{ job.selected_format or 'MP4' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="ms-md-auto text-md-end">
+        <div class="text-muted-custom">{{ job.created_at|timeago }}</div>
+        <div class="text-muted-custom">{{ job.formatted_size() }}</div>
+        <span class="status-badge {{ status_class }} mt-2">{{ job.status|capitalize }}</span>
+      </div>
+      <div class="d-flex gap-2 ms-md-3">
+        {% if job.status == 'complete' %}
+          <button class="btn btn-sm btn-primary" type="button">Re-download</button>
+        {% endif %}
+        <button class="btn btn-sm btn-outline-danger" type="button">Delete</button>
+      </div>
+    </div>
+  </div>
+{% endmacro %}

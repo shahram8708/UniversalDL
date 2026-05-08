@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing — Free & Pro Plans{% endblock %}
+
+{% block extra_css %}
+<style>
+  .pricing-hero {
+    padding: 80px 0 40px;
+    text-align: center;
+  }
+  .pricing-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    padding: 28px;
+    height: 100%;
+    position: relative;
+  }
+  .pricing-card.featured {
+    border: 2px solid var(--color-accent);
+    box-shadow: var(--shadow-md);
+  }
+  .pricing-toggle {
+    background: var(--color-surface-2);
+    border-radius: 999px;
+    padding: 6px;
+    display: inline-flex;
+    gap: 6px;
+  }
+  .pricing-toggle button {
+    border-radius: 999px;
+    border: none;
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--color-text-muted);
+  }
+  .pricing-toggle button.active {
+    background: var(--color-accent);
+    color: var(--color-text-on-accent);
+  }
+  .pricing-ribbon {
+    position: absolute;
+    top: 18px;
+    right: -8px;
+    background: var(--color-accent);
+    color: var(--color-text-on-accent);
+    padding: 4px 14px;
+    font-size: 0.75rem;
+    border-radius: 999px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="pricing-hero">
+  <div class="container">
+    <h1>Pricing That Makes Sense</h1>
+    <p class="text-muted-custom">The free plan is genuinely useful — not a crippled trial. Upgrade when you need more power.</p>
+    <div class="pricing-toggle mt-4" role="group">
+      <button type="button" class="active" data-plan="monthly">Monthly</button>
+      <button type="button" data-plan="annual">Annual</button>
+    </div>
+  </div>
+</section>
+
+<section class="py-4">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="pricing-card">
+          <span class="status-badge status-disabled">Free</span>
+          <h3 class="display-6 mt-3">₹0</h3>
+          <p class="text-muted-custom">For personal use and light downloads.</p>
+          <ul class="list-unstyled text-muted-custom">
+            <li>✅ Up to 1080p quality</li>
+            <li>✅ 2 concurrent downloads</li>
+            <li>✅ 5 URLs per batch</li>
+            <li>✅ 7 day history</li>
+            <li>✅ Browser extension</li>
+            <li>✅ No ads</li>
+          </ul>
+          <a class="btn btn-outline-primary w-100" href="/download">Start Free</a>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="pricing-card featured">
+          <div class="pricing-ribbon">Most Popular</div>
+          <span class="status-badge status-down">Pro</span>
+          <div class="pricing-value mt-3" data-monthly="₹799" data-annual="₹6,399">
+            <h3 class="display-6">₹799</h3>
+            <div class="text-muted-custom">per month</div>
+          </div>
+          <div class="text-muted-custom small" id="annual-savings" data-annual="Save ₹2,189 per year"></div>
+          <p class="text-muted-custom">For creators, archivists, and power users.</p>
+          <ul class="list-unstyled text-muted-custom">
+            <li>✅ 8K and HDR quality</li>
+            <li>✅ 10 concurrent downloads</li>
+            <li>✅ Unlimited batch downloads</li>
+            <li>✅ Channel subscriptions</li>
+            <li>✅ Download history forever</li>
+            <li>✅ REST API access (10,000 calls/month)</li>
+            <li>✅ Priority queue</li>
+          </ul>
+          {% if current_user.is_authenticated %}
+            <a class="btn btn-primary w-100" href="/upgrade">Upgrade to Pro</a>
+          {% else %}
+            <a class="btn btn-primary w-100" href="/auth/register?plan=pro">Upgrade to Pro</a>
+            <div class="text-muted-custom small mt-2">Already have an account? <a href="/auth/login">Log in →</a></div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="pricing-card">
+          <span class="status-badge status-disabled">Enterprise</span>
+          <h3 class="display-6 mt-3">Custom</h3>
+          <p class="text-muted-custom">For teams, universities, and large scale automation.</p>
+          <ul class="list-unstyled text-muted-custom">
+            <li>✅ Dedicated workers</li>
+            <li>✅ Custom rate limits</li>
+            <li>✅ SSO and team management</li>
+            <li>✅ SLA and priority support</li>
+            <li>✅ On premises options</li>
+          </ul>
+          <a class="btn btn-outline-primary w-100" href="/contact?subject=billing">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-surface-2">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">Feature Comparison</h2>
+      <p class="section-subtitle">Detailed breakdown by category.</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Free</th>
+            <th>Pro</th>
+            <th>Enterprise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Max quality</td><td>1080p</td><td>8K HDR</td><td>8K HDR</td></tr>
+          <tr><td>Concurrent downloads</td><td>2</td><td>10</td><td>Custom</td></tr>
+          <tr><td>Batch limit</td><td>5 URLs</td><td>Unlimited</td><td>Unlimited</td></tr>
+          <tr><td>Download history</td><td>7 days</td><td>Forever</td><td>Forever</td></tr>
+          <tr><td>Subscriptions</td><td>Basic</td><td>20 channels</td><td>Unlimited</td></tr>
+          <tr><td>API access</td><td>Not available</td><td>10,000 calls/month</td><td>Custom</td></tr>
+          <tr><td>Webhook callbacks</td><td>Not available</td><td>Included</td><td>Included</td></tr>
+          <tr><td>Support</td><td>Community</td><td>Email in 48h</td><td>Priority SLA</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-subtitle">Answers to common billing and plan questions.</p>
+    </div>
+    <div class="accordion" id="pricingFaq">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqOne">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqOneBody">Is there a free trial?</button>
+        </h2>
+        <div id="faqOneBody" class="accordion-collapse collapse show" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">The Free plan is the trial. You can download immediately without a credit card.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqTwo">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwoBody">What payment methods are accepted?</button>
+        </h2>
+        <div id="faqTwoBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">Payments are processed by Razorpay with cards, UPI, netbanking, and wallets.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqThree">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqThreeBody">Can I cancel anytime?</button>
+        </h2>
+        <div id="faqThreeBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">Yes. Pro access continues until the end of your paid period, with no renewal charges.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqFour">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFourBody">What happens to my data if I downgrade?</button>
+        </h2>
+        <div id="faqFourBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">Your history is retained based on your plan. Pro history remains accessible until the plan expires.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqFive">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFiveBody">Is my payment info stored?</button>
+        </h2>
+        <div id="faqFiveBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">No. Razorpay handles payment data and is PCI DSS compliant.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqSix">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqSixBody">Do you offer student discounts?</button>
+        </h2>
+        <div id="faqSixBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">Not yet, but we are working on education partnerships. Contact support if you need help.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqSeven">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqSevenBody">What counts as a download?</button>
+        </h2>
+        <div id="faqSevenBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">Each unique URL counts as one download, even if it contains multiple files.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqEight">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqEightBody">What are the API rate limits?</button>
+        </h2>
+        <div id="faqEightBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">Pro includes 10,000 calls per month with endpoint specific limits in the docs.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqNine">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqNineBody">Can I use UniversalDL commercially?</button>
+        </h2>
+        <div id="faqNineBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">Yes, as long as you comply with platform terms of service and local laws.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="faqTen">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTenBody">How does billing work?</button>
+        </h2>
+        <div id="faqTenBody" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+          <div class="accordion-body">Billing is a one time payment per period via Razorpay. No automatic renewals.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-4 bg-surface-2">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-center gap-4 text-muted-custom">
+      <span>🔒 Secured by Razorpay</span>
+      <span>🇮🇳 INR Pricing</span>
+      <span>⚡ Instant Activation</span>
+      <span>📞 48h Email Support (Pro)</span>
+      <span>🔄 Cancel Anytime</span>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container text-center">
+    <h2 class="section-title">Start with the free plan today</h2>
+    <p class="section-subtitle">Paste a URL and download instantly.</p>
+    <form class="d-flex flex-column flex-md-row gap-2 justify-content-center mt-4" method="GET" action="/download">
+      <input class="form-control form-control-lg url-input-auto" type="url" name="url" placeholder="Paste any URL" required>
+      <button class="btn btn-primary btn-lg" type="submit">Analyze &amp; Download</button>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+  (function () {
+    var toggleButtons = document.querySelectorAll(".pricing-toggle button");
+    var pricingValue = document.querySelector(".pricing-value");
+    if (!toggleButtons.length || !pricingValue) {
+      return;
+    }
+    toggleButtons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        toggleButtons.forEach(function (item) {
+          item.classList.remove("active");
+        });
+        btn.classList.add("active");
+        var plan = btn.getAttribute("data-plan");
+        var value = pricingValue.getAttribute("data-" + plan);
+        var label = plan === "annual" ? "per year" : "per month";
+        pricingValue.querySelector("h3").textContent = value;
+        pricingValue.querySelector("div").textContent = label;
+        var savings = document.getElementById("annual-savings");
+        if (savings) {
+          savings.textContent = plan === "annual" ? savings.getAttribute("data-annual") : "";
+        }
+      });
+    });
+    var savings = document.getElementById("annual-savings");
+    if (savings) {
+      savings.textContent = "";
+    }
+  })();
+</script>
+{% endblock %}

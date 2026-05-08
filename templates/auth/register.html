@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="auth-page auth-page-split">
+  <div class="auth-shell auth-shell-register">
+    <aside class="auth-panel" aria-hidden="true">
+      <span class="auth-kicker">Start Free</span>
+      <h2 class="auth-panel-title">Create your account and start downloading in seconds</h2>
+      <p class="auth-panel-subtitle">
+        No credit card required. Build your own library from YouTube, Vimeo, Instagram, and many more supported platforms.
+      </p>
+
+      <ul class="auth-benefits">
+        <li><i class="bi bi-check-circle-fill"></i>Save your complete download history</li>
+        <li><i class="bi bi-check-circle-fill"></i>Retry failed jobs with one click</li>
+        <li><i class="bi bi-check-circle-fill"></i>Use smart quality presets for each platform</li>
+      </ul>
+
+      <div class="auth-panel-note">
+        <i class="bi bi-lock-fill"></i>
+        We use secure authentication and never store your platform passwords.
+      </div>
+    </aside>
+
+    <div class="auth-card auth-form-card w-100">
+      <div class="auth-logo">
+        <i class="bi bi-person-circle text-accent font-size-2-5rem"></i>
+      </div>
+
+      <h4 class="text-center mb-2">Create your free account</h4>
+      <p class="text-center text-muted-custom mb-4">Sign up now and manage all downloads from one dashboard.</p>
+
+      <a class="social-login-btn mb-3" href="/auth/google">
+        <span class="social-login-icon"><i class="bi bi-google"></i></span>
+        <span>Sign up with Google</span>
+      </a>
+
+      <div class="divider-text"><span>or sign up with email</span></div>
+
+      <form method="post" action="{{ url_for('auth.register') }}" class="auth-form">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+          {{ form.display_name.label(class="form-label") }}
+          {{ form.display_name(class="form-control" + (' is-invalid' if form.display_name.errors else ''), placeholder='Optional', autocomplete='name') }}
+          {% for error in form.display_name.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.email.label(class="form-label") }}
+          {{ form.email(class="form-control" + (' is-invalid' if form.email.errors else ''), placeholder='you@example.com', autocomplete='email') }}
+          {% for error in form.email.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.password.label(class="form-label") }}
+          <div class="input-group auth-password-group">
+            {{ form.password(id='register-password', class="form-control" + (' is-invalid' if form.password.errors else ''), placeholder='Create a strong password', autocomplete='new-password') }}
+            <button class="btn btn-outline-secondary password-toggle-btn" type="button" data-toggle="password" data-target="register-password" aria-label="Show or hide password">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+          <div class="password-strength-bar">
+            <div class="strength-fill"></div>
+          </div>
+          <div class="auth-password-hint">Use at least 10 characters with uppercase, number, and symbol for best strength.</div>
+          {% for error in form.password.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.confirm_password.label(class="form-label") }}
+          {{ form.confirm_password(class="form-control" + (' is-invalid' if form.confirm_password.errors else ''), placeholder='Confirm your password', autocomplete='new-password') }}
+          {% for error in form.confirm_password.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-check mb-3">
+          {{ form.agree_terms(class="form-check-input" + (' is-invalid' if form.agree_terms.errors else '')) }}
+          <label class="form-check-label" for="{{ form.agree_terms.id }}">
+            I agree to the <a href="/legal/terms">Terms of Service</a> and <a href="/legal/privacy">Privacy Policy</a>
+          </label>
+          {% for error in form.agree_terms.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        {{ form.submit(class="btn btn-primary w-100 auth-submit-btn", data_btn_loader="true", data_loading_text="Creating account...") }}
+      </form>
+
+      <p class="text-center mt-4 text-muted-custom auth-footer-text">
+        Already have an account? <a href="{{ url_for('auth.login') }}" class="text-accent">Log In</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

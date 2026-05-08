@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% from 'components/platform_badge.html' import platform_badge %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="h3 mb-1">{{ greeting }}, {{ current_user.display_name or current_user.email.split('@')[0] }}!</h1>
+      <p class="text-muted mb-0">Here is what is happening with your downloads.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-primary" href="/download"><i class="bi bi-download me-1"></i>New Download</a>
+      <a class="btn btn-outline-primary" href="/download/batch"><i class="bi bi-layers me-1"></i>Batch Download</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="display-6 fw-bold">{{ kpi_total_downloads }}</div>
+              <div class="text-muted">Total Downloads</div>
+            </div>
+            <i class="bi bi-cloud-download text-accent fs-3"></i>
+          </div>
+          <div class="small text-muted mt-2">All time completed</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="display-6 fw-bold">{{ kpi_total_size }}</div>
+              <div class="text-muted">Data Downloaded</div>
+            </div>
+            <i class="bi bi-hdd text-accent fs-3"></i>
+          </div>
+          <div class="small text-muted mt-2">Total file size saved</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="display-6 fw-bold">{{ kpi_active_subscriptions }}</div>
+              <div class="text-muted">Subscriptions</div>
+            </div>
+            <i class="bi bi-bell text-accent fs-3"></i>
+          </div>
+          <div class="small text-muted mt-2">
+            Channel monitors active
+            {% if kpi_active_subscriptions == 0 and is_free_user %}
+              <a class="ms-1" href="/subscriptions">Add one</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="display-6 fw-bold" id="active-queue-count" data-count="{{ kpi_active_queue }}">{{ kpi_active_queue }}</div>
+              <div class="text-muted">In Queue</div>
+            </div>
+            <i class="bi bi-hourglass-split {% if kpi_active_queue > 0 %}text-warning{% else %}text-success{% endif %} fs-3"></i>
+          </div>
+          <div class="small text-muted mt-2">
+            {% if kpi_active_queue > 0 %}Processing now{% else %}Queue empty{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <form action="/download" method="get">
+        <div class="input-group input-group-lg">
+          <input type="url" name="url" class="form-control" placeholder="Paste any URL to download instantly..." required>
+          <button class="btn btn-primary" type="submit">Start</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="fw-semibold">Active Downloads</div>
+          <a class="small" href="/history?status=downloading">View all</a>
+        </div>
+        <div class="card-body">
+          {% if kpi_active_queue == 0 %}
+            <div class="text-center py-4" id="queue-empty-state">
+              <i class="bi bi-check-circle text-success fs-1"></i>
+              <div class="fw-semibold mt-2">Queue is empty, all downloads complete</div>
+              <a class="btn btn-sm btn-outline-primary mt-3" href="/download">Start a new download</a>
+            </div>
+          {% else %}
+            <div class="list-group" id="queue-list">
+              {% for job in active_jobs[:5] %}
+                <div class="list-group-item d-flex align-items-start gap-3 queue-item" data-job-id="{{ job.id }}">
+                  <div class="position-relative">
+                    <img src="{{ job.thumbnail_url or '' }}" alt="" class="rounded size-40 obj-cover" onerror="this.style.display='none';">
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold text-truncate queue-title mw-360">{{ job.title or 'Analyzing...' }}</div>
+                    <div class="d-flex align-items-center gap-2 small text-muted mt-1">
+                      {{ platform_badge(job.platform) }}
+                      <span class="text-uppercase">{{ job.selected_quality or 'auto' }}</span>
+                      <span>{{ (job.selected_format or 'mp4')|upper }}</span>
+                    </div>
+                    <div class="progress mt-2 progress-h-6">
+                      <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: {{ job.progress_pct or 0 }}%"></div>
+                    </div>
+                    <div class="small text-muted mt-1">
+                      <span class="job-status-text">{{ job.status|replace('_', ' ')|title }}</span>
+                      <span class="ms-2 job-speed-text"></span>
+                      <span class="ms-2 job-eta-text"></span>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-outline-danger cancel-job-btn" data-job-id="{{ job.id }}">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="mt-3">
+              <a class="small" href="/history?status=downloading">View full queue</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="fw-semibold">Recent Downloads</div>
+          <a class="small" href="/history">View history</a>
+        </div>
+        <div class="card-body">
+          {% if recent_jobs|length == 0 %}
+            <div class="text-center py-4">
+              <div class="fw-semibold">No downloads yet</div>
+              <a class="btn btn-sm btn-primary mt-3" href="/download">Start your first download</a>
+            </div>
+          {% else %}
+            <div class="table-responsive">
+              <table class="table table-hover" id="recent-downloads-table">
+                <thead>
+                  <tr>
+                    <th>Thumbnail</th>
+                    <th>Title</th>
+                    <th>Platform</th>
+                    <th>Quality</th>
+                    <th>Format</th>
+                    <th>Date</th>
+                    <th>Size</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for job in recent_jobs %}
+                    <tr data-job-id="{{ job.id }}">
+                      <td>
+                        <div class="position-relative">
+                          <img src="{{ job.thumbnail_url or '' }}" alt="" class="rounded size-48 obj-cover" onerror="this.src='';">
+                          {% if job.status != 'complete' %}
+                            <span class="position-absolute top-0 start-0 translate-middle status-badge {% if job.status == 'failed' %}status-down{% else %}status-degraded{% endif %}">
+                              {% if job.status == 'failed' %}<i class="bi bi-x"></i>{% else %}<i class="bi bi-arrow-repeat"></i>{% endif %}
+                            </span>
+                          {% endif %}
+                        </div>
+                      </td>
+                      <td>
+                        <div class="fw-semibold text-truncate mw-240" data-bs-toggle="tooltip" title="{{ job.title }}">{{ job.title or 'Untitled' }}</div>
+                      </td>
+                      <td>{{ platform_badge(job.platform) }}</td>
+                      <td><span class="status-badge status-disabled">{{ job.selected_quality or '-' }}</span></td>
+                      <td class="text-uppercase">{{ (job.selected_format or '-') }}</td>
+                      <td>
+                        <span data-bs-toggle="tooltip" title="{{ job.created_at.isoformat() if job.created_at else '' }}">{{ get_relative_time(job.created_at) }}</span>
+                      </td>
+                      <td>{{ job.file_size_bytes|format_bytes }}</td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-secondary redownload-btn" data-job-id="{{ job.id }}">
+                          <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-job-btn" data-job-id="{{ job.id }}">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-2">
+              <a class="small" href="/history">View all {{ kpi_total_downloads }} downloads</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="fw-semibold">Channel Subscriptions</div>
+          <div class="d-flex align-items-center gap-2">
+            <a class="small" href="/subscriptions">Manage</a>
+            {% if is_free_user %}
+              <span class="status-badge status-degraded">Pro feature</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="card-body">
+          {% if subscriptions_summary|length == 0 %}
+            <div class="text-center py-4">
+              {% if is_free_user %}
+                <i class="bi bi-lock fs-1 text-muted"></i>
+                <div class="fw-semibold mt-2">Auto download new content from your favorite channels</div>
+                <a class="btn btn-sm btn-primary mt-3" href="/upgrade">Upgrade to Pro, ₹799 per month</a>
+              {% else %}
+                <i class="bi bi-bell fs-1 text-muted"></i>
+                <div class="fw-semibold mt-2">No subscriptions yet</div>
+                <a class="btn btn-sm btn-outline-primary mt-3" href="/subscriptions">Add your first subscription</a>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="list-group">
+              {% for sub in subscriptions_summary %}
+                <div class="list-group-item d-flex gap-3 align-items-start">
+                  <div class="pt-1">{{ platform_badge(sub.platform) }}</div>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold">{{ sub.channel_name }}</div>
+                    <div class="d-flex flex-wrap gap-2 small text-muted mt-1">
+                      <span class="status-badge status-disabled">{{ sub.frequency|title }}</span>
+                      <span class="status-badge status-disabled">{{ sub.quality }}</span>
+                      <span class="status-badge status-disabled">{{ sub.format|upper }}</span>
+                    </div>
+                    <div class="small text-muted mt-2">Checked {{ get_relative_time(sub.last_checked_at) }}</div>
+                    <div class="small text-muted">Next check {{ get_relative_time(sub.next_check_at) }}</div>
+                  </div>
+                  <div class="text-end">
+                    <span class="status-badge status-disabled">{{ sub.total_downloaded }} items</span>
+                    <div class="mt-2">
+                      <span class="status-badge {% if sub.is_active %}status-active{% else %}status-disabled{% endif %}">{% if sub.is_active %}Active{% else %}Paused{% endif %}</span>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if is_free_user %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <div class="d-flex gap-2 align-items-start">
+            <i class="bi bi-lightning-charge fs-4"></i>
+            <div>
+              <div class="fw-semibold">Unlock unlimited batch downloads, channel subscriptions, 8K quality, REST API access, and more with Pro.</div>
+              <div class="small text-muted">From ₹799 per month</div>
+              <div class="mt-2">
+                <a class="btn btn-sm btn-primary" href="/upgrade">Upgrade to Pro</a>
+                <a class="btn btn-sm btn-link" href="/pricing">Learn more</a>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+
+      {% if recent_batches|length > 0 %}
+        <div class="card">
+          <div class="card-header">
+            <div class="fw-semibold">Recent Batch Downloads</div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>URLs</th>
+                    <th>Completed</th>
+                    <th>Failed</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for batch in recent_batches %}
+                    <tr>
+                      <td>{{ get_relative_time(batch.created_at) }}</td>
+                      <td>{{ batch.total_jobs }}</td>
+                      <td>{{ batch.completed_jobs }}</td>
+                      <td>{{ batch.failed_jobs }}</td>
+                      <td><span class="status-badge status-disabled">{{ batch.status|replace('_', ' ')|title }}</span></td>
+                      <td>
+                        {% if batch.status in ['complete', 'partial'] %}
+                          <a class="btn btn-sm btn-outline-primary" href="/download/batch/zip/{{ batch.id }}">Download ZIP</a>
+                        {% else %}
+                          <span class="text-muted small">Processing</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

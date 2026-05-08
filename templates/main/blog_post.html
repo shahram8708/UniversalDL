@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} — UniversalDL Blog{% endblock %}
+{% block meta_desc %}{{ post.meta_description or post.excerpt }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .blog-content h2 {
+    margin-top: 2.5rem;
+    color: var(--color-accent);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.4rem;
+  }
+  .blog-content h3 {
+    margin-top: 2rem;
+  }
+  .blog-content p {
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+  .blog-content ul,
+  .blog-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .blog-content code {
+    background: var(--color-surface-2);
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .blog-content pre {
+    background: var(--color-surface-2);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .blog-content blockquote {
+    border-left: 4px solid var(--color-accent);
+    padding-left: 1rem;
+    color: var(--color-text-muted);
+  }
+  .blog-sidebar {
+    position: sticky;
+    top: 90px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <nav class="small mb-3 text-muted-custom">Home → Blog → {{ post.title[:40] }}</nav>
+        <span class="status-badge status-disabled">{{ post.category }}</span>
+        <h1 class="mt-2">{{ post.title }}</h1>
+        <div class="text-muted-custom small">By {{ post.author }} · {{ post.published_at.strftime('%b %d, %Y') if post.published_at else '' }} · {{ post.view_count }} views</div>
+        {% if post.thumbnail_url %}
+          <img src="{{ post.thumbnail_url }}" alt="{{ post.title }}" class="img-fluid rounded-4 my-4">
+        {% endif %}
+
+        <div class="blog-content">
+          {{ content_html | safe }}
+        </div>
+
+        <div class="card my-5">
+          <div class="card-body">
+            <h5>Try UniversalDL now</h5>
+            <p class="text-muted-custom">Paste a URL and download instantly.</p>
+            <form class="d-flex flex-column flex-md-row gap-2" method="GET" action="/download">
+              <input class="form-control url-input-auto" name="url" type="url" placeholder="Paste any URL" required>
+              <button class="btn btn-primary" type="submit">Analyze &amp; Download</button>
+            </form>
+            <div class="text-muted-custom small mt-2">No account required · No ads · 200+ platforms</div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-3 align-items-center mt-4">
+          <a class="btn btn-outline-primary" href="https://twitter.com/intent/tweet?text={{ post.title }}&url={{ request.url }}" target="_blank" rel="noopener">Share on Twitter</a>
+          <button class="btn btn-outline-secondary" id="copy-link-btn" type="button">Copy Link</button>
+        </div>
+
+        {% if post.tags %}
+          <div class="mt-3 text-muted-custom">Tags: {{ post.tags }}</div>
+        {% endif %}
+
+        <div class="card mt-4">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="avatar-token avatar-token-accent size-52">U</div>
+            <div>
+              <div class="fw-semibold">Written by {{ post.author }}</div>
+              <div class="text-muted-custom small">UniversalDL Team · Experts in media downloading and digital archiving</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <h3>Related Articles</h3>
+          <div class="row g-4 mt-2">
+            {% for item in related_posts %}
+              <div class="col-md-4">
+                <div class="card h-100">
+                  <div class="ratio ratio-16x9 bg-surface-2">
+                    {% if item.thumbnail_url %}
+                      <img src="{{ item.thumbnail_url }}" alt="{{ item.title }}" class="img-fluid rounded-top">
+                    {% endif %}
+                  </div>
+                  <div class="card-body">
+                    <span class="status-badge status-disabled mb-2">{{ item.category }}</span>
+                    <h6><a href="/blog/{{ item.slug }}">{{ item.title }}</a></h6>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="blog-sidebar">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6>Try UniversalDL</h6>
+              <form class="d-flex gap-2" method="GET" action="/download">
+                <input class="form-control" name="url" type="url" placeholder="Paste URL" required>
+                <button class="btn btn-primary" type="submit">Go</button>
+              </form>
+              <div class="text-muted-custom small mt-2">Download from 200+ platforms</div>
+              <a class="btn btn-outline-primary w-100 mt-3" href="/download">Start Free — No Account Needed</a>
+            </div>
+          </div>
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6>About This Blog</h6>
+              <p class="text-muted-custom">We publish practical guides for creators, archivists, and researchers who need reliable downloads.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h6>Popular Articles</h6>
+              <ol class="mb-0">
+                {% for item in popular_posts %}
+                  <li class="mb-2"><a href="/blog/{{ item.slug }}">{{ item.title }}</a></li>
+                {% endfor %}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+  (function () {
+    var copyBtn = document.getElementById("copy-link-btn");
+    if (!copyBtn || !navigator.clipboard) {
+      return;
+    }
+    copyBtn.addEventListener("click", function () {
+      navigator.clipboard.writeText(window.location.href).then(function () {
+        copyBtn.textContent = "Copied";
+        setTimeout(function () {
+          copyBtn.textContent = "Copy Link";
+        }, 2000);
+      });
+    });
+  })();
+</script>
+{% endblock %}

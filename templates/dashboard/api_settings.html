@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block title %}API Key Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  {% if upgrade_required %}
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card text-center">
+          <div class="card-body py-5">
+            <i class="bi bi-code-slash text-accent font-size-3rem"></i>
+            <h2 class="h4 mt-3">REST API Access</h2>
+            <p class="text-muted">Integrate UniversalDL into your own scripts, servers, and automation workflows.</p>
+            <div class="text-start mx-auto mw-480">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i>Full REST API access (API v1)</li>
+                <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i>Analyze URLs programmatically</li>
+                <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i>Start and monitor downloads via API</li>
+                <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i>Batch downloads via API</li>
+                <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i>Webhook callbacks on completion</li>
+                <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i>10,000 API calls per month</li>
+              </ul>
+            </div>
+            <div class="code-surface-panel text-start p-3 mt-4 font-mono">
+<pre class="mb-0"><code>curl -X POST https://universaldl.com/api/v1/analyze \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://youtube.com/watch?v=..."}'</code></pre>
+            </div>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+              <div class="card bg-surface-2 p-3">
+                <div class="fw-semibold">₹799/month</div>
+                <div class="small text-muted">or ₹6,399/year</div>
+              </div>
+              <a class="btn btn-primary align-self-center" href="/upgrade">Upgrade to Pro</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+      <div>
+        <h1 class="h3 mb-1">API Key Management</h1>
+        <p class="text-muted mb-0">Integrate UniversalDL into your apps and automation scripts</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="display-6 fw-bold">{{ usage_last_30_days }}</div>
+            <div class="text-muted">API Calls (30 days)</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="display-6 fw-bold">{{ monthly_limit|format_number }}</div>
+            <div class="text-muted">Monthly Limit</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div class="fw-semibold">{{ usage_percentage|round(1) }}% used</div>
+              <div class="small text-muted">{{ usage_last_30_days }} of {{ monthly_limit|format_number }}</div>
+            </div>
+            {% set bar_class = 'progress-tone-success' %}
+            {% if usage_percentage >= 85 %}{% set bar_class = 'progress-tone-danger' %}{% elif usage_percentage >= 60 %}{% set bar_class = 'progress-tone-warning' %}{% endif %}
+            <div class="progress mt-2 progress-h-6">
+              <div class="progress-bar {{ bar_class }}" style="width: {{ usage_percentage }}%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header fw-semibold">API Usage - Last 30 Days</div>
+      <div class="card-body">
+        <canvas id="api-usage-chart" height="250" data-labels="{{ daily_labels }}" data-counts="{{ daily_counts }}"></canvas>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header fw-semibold">Your API Key</div>
+      <div class="card-body">
+        <div id="no-api-key-state" class="{% if has_api_key %}d-none{% endif %}">
+          <div class="text-center py-3">
+            <i class="bi bi-key text-muted font-size-2rem"></i>
+            <div class="fw-semibold mt-2">No API key generated yet</div>
+            <div class="text-muted">Generate an API key to start using the REST API.</div>
+          </div>
+          <form class="generate-key-form mt-3">
+            {{ api_key_form.hidden_tag() }}
+            <div class="mb-3">
+              {{ api_key_form.key_name.label(class="form-label") }}
+              {{ api_key_form.key_name(class="form-control", placeholder="My Plex Server") }}
+              <div class="form-text">{{ api_key_form.key_name.description }}</div>
+            </div>
+            {{ api_key_form.submit(class="btn btn-primary") }}
+          </form>
+        </div>
+
+        <div id="has-api-key-state" class="{% if not has_api_key %}d-none{% endif %}">
+          <label class="form-label">Active API Key</label>
+          <div class="input-group mb-2">
+            <input id="api-key-prefix-display" class="form-control" value="udl_{{ api_key_prefix }}***************" readonly>
+            <button class="btn btn-outline-secondary" type="button" id="copy-prefix-btn"><i class="bi bi-clipboard"></i></button>
+            <button class="btn btn-outline-danger" type="button" id="revoke-key-btn"><i class="bi bi-trash"></i></button>
+          </div>
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-1"></i>For security, your full API key is not displayed after generation. If you have lost your key, revoke it and generate a new one.
+          </div>
+          <div class="small text-muted">
+            Last used: {% if last_used_at %}{{ last_used_at|relative_time }}{% else %}Never used{% endif %}
+          </div>
+          <div class="small text-muted">{{ usage_last_30_days }} calls in last 30 days</div>
+          <hr>
+          <div>
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#newKeyCollapse">Generate New Key</button>
+          </div>
+          <div class="collapse mt-3" id="newKeyCollapse">
+            <div class="alert alert-warning">This will immediately invalidate your current key. Any services using the current key will stop working.</div>
+            <form class="generate-key-form mt-2">
+              {{ api_key_form.hidden_tag() }}
+              <div class="mb-3">
+                {{ api_key_form.key_name.label(class="form-label") }}
+                {{ api_key_form.key_name(class="form-control", placeholder="Automation Script") }}
+              </div>
+              {{ api_key_form.submit(class="btn btn-primary") }}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header fw-semibold">Quick Start</div>
+      <div class="card-body">
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-auth" type="button" role="tab">Authentication</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-analyze" type="button" role="tab">Analyze URL</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-download" type="button" role="tab">Start Download</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-status" type="button" role="tab">Check Status</button>
+          </li>
+        </ul>
+        <div class="tab-content pt-3">
+          <div class="tab-pane fade show active" id="tab-auth" role="tabpanel">
+            <pre class="code-surface-panel p-3"><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+          </div>
+          <div class="tab-pane fade" id="tab-analyze" role="tabpanel">
+            <pre class="code-surface-panel p-3"><code>POST /api/v1/analyze
+{"url": "https://youtube.com/watch?v=..."}</code></pre>
+          </div>
+          <div class="tab-pane fade" id="tab-download" role="tabpanel">
+            <pre class="code-surface-panel p-3"><code>POST /api/v1/download
+{"url": "...", "quality": "1080p", "format": "mp4"}</code></pre>
+          </div>
+          <div class="tab-pane fade" id="tab-status" role="tabpanel">
+            <pre class="code-surface-panel p-3"><code>GET /api/v1/jobs/{job_id}</code></pre>
+          </div>
+        </div>
+        <a class="small" href="/docs">View full API documentation</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header fw-semibold">Most Used Endpoints</div>
+      <div class="card-body">
+        {% if not usage_by_endpoint %}
+          <div class="text-muted">No API calls yet</div>
+        {% else %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Endpoint</th>
+                  <th>Method</th>
+                  <th>Calls (30 days)</th>
+                  <th>Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% set total_calls = usage_last_30_days if usage_last_30_days else 1 %}
+                {% for endpoint, method, count in usage_by_endpoint %}
+                  {% set pct = (count / total_calls) * 100 %}
+                  <tr>
+                    <td>{{ endpoint }}</td>
+                    <td>{{ method }}</td>
+                    <td>{{ count }}</td>
+                    <td>
+                      <div class="progress progress-h-6">
+                        <div class="progress-bar" style="width: {{ pct }}%"></div>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<div class="modal fade" id="newKeyModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Your New API Key</h5>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning">This key will only be shown once. Copy it now and store it safely.</div>
+        <div class="input-group mb-3">
+          <input class="form-control" id="raw-api-key-display" readonly>
+          <button class="btn btn-outline-primary" type="button" id="copy-raw-key-btn">Copy to Clipboard</button>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="confirm-copied-checkbox">
+          <label class="form-check-label" for="confirm-copied-checkbox">I have copied and saved my API key securely</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="close-new-key-modal-btn" data-bs-dismiss="modal" disabled>Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toast-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/api_settings.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}Batch Download{% endblock %}
+
+{% block extra_css %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="is-pro" content="{{ 1 if current_user.is_pro() else 0 }}">
+<style>
+  .textarea-highlight { position: relative; }
+  .url-highlight {
+    position: absolute;
+    inset: 0;
+    padding: 0.75rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: transparent;
+    pointer-events: none;
+  }
+  .url-highlight .invalid-line { background: var(--color-error-bg); }
+  .url-input-overlay { position: relative; background: transparent; }
+  .skeleton-thumb { width: 48px; height: 48px; border-radius: 6px; background: var(--color-surface-2); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <h2 class="fw-bold">Batch Download Queue</h2>
+      <p class="text-muted">Download multiple URLs simultaneously</p>
+
+      <div id="batch-warning" class="alert alert-warning d-none"></div>
+
+      {% if not current_user.is_pro() %}
+      <div class="alert alert-warning">Free plan: max 5 URLs per batch. Upgrade to Pro for unlimited batch downloads.</div>
+      {% else %}
+      <span class="status-badge status-active">Pro Plan | Unlimited URLs</span>
+      {% endif %}
+
+      <ul class="nav nav-tabs mt-4" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#paste-tab" type="button" role="tab">Paste URLs</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#upload-tab" type="button" role="tab">Upload .txt file</button>
+        </li>
+      </ul>
+
+      <div class="tab-content border border-top-0 p-3">
+        <div class="tab-pane fade show active" id="paste-tab" role="tabpanel">
+          <div class="textarea-highlight">
+            <pre id="url-highlight" class="url-highlight"></pre>
+            <textarea id="url-textarea" class="form-control url-input-overlay" rows="15" placeholder="https://youtube.com/watch?v=...\nhttps://tiktok.com/@.../video/...\nhttps://instagram.com/reel/...\n(one URL per line)"></textarea>
+          </div>
+          <div id="url-counter" class="small text-muted mt-2">0 URLs detected</div>
+          <div id="invalid-list" class="small text-danger mt-2"></div>
+        </div>
+        <div class="tab-pane fade" id="upload-tab" role="tabpanel">
+          <div id="drop-zone" class="border border-2 border-dashed p-4 text-center rounded">
+            <p class="mb-2">Drop a .txt file here or click to browse</p>
+            <input id="txt-file-input" type="file" accept=".txt" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-3">
+        <div class="col-md-6">
+          <label class="form-label">Default Quality</label>
+          <select id="default-quality" class="form-select">
+            {% for value, label in form.default_quality.choices %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Default Format</label>
+          <select id="default-format" class="form-select">
+            {% for value, label in form.default_format.choices %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12">
+          <div class="form-check">
+            <input id="notify-email" class="form-check-input" type="checkbox">
+            <label class="form-check-label" for="notify-email">Email me when batch completes</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        <button id="parse-btn" class="btn btn-outline-primary">Parse and Preview</button>
+        <button id="start-btn" class="btn btn-primary d-none">Start Download Queue</button>
+        <button id="pause-all-btn" class="btn btn-outline-secondary">Pause All</button>
+        <button id="cancel-all-btn" class="btn btn-outline-danger">Cancel All</button>
+      </div>
+
+      <div id="preview-section" class="mt-4 d-none">
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Thumbnail</th>
+                <th>Title</th>
+                <th>Platform</th>
+                <th>Quality</th>
+                <th>Format</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="preview-table-body"></tbody>
+          </table>
+        </div>
+        <button id="expand-btn" class="btn btn-link"></button>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          <button id="download-zip-btn" class="btn btn-success d-none">Download All as ZIP</button>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <h5>Recent Batches</h5>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Completed</th>
+                <th>Failed</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for batch in recent_batches %}
+              <tr>
+                <td>{{ batch.created_at|timeago }}</td>
+                <td>{{ batch.total_jobs }}</td>
+                <td>{{ batch.completed_jobs }}</td>
+                <td>{{ batch.failed_jobs }}</td>
+                <td><span class="status-badge status-disabled">{{ batch.status }}</span></td>
+                <td>
+                  <a class="btn btn-sm btn-outline-primary" href="{{ url_for('downloader.batch_page') }}">View Progress</a>
+                  {% if batch.zip_url %}
+                  <a class="btn btn-sm btn-outline-success" href="{{ batch.zip_url }}">Download ZIP</a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div id="queue-summary" class="card shadow-lg sticky-top sticky-top-90 d-none">
+        <div class="card-body">
+          <h5 class="card-title">Queue Summary</h5>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Total</span>
+            <span id="queue-total">0</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Completed</span>
+            <span id="queue-completed">0</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span>Failed</span>
+            <span id="queue-failed">0</span>
+          </div>
+          <div class="progress mb-3 progress-h-10">
+            <div id="queue-progress-bar" class="progress-bar progress-zero"></div>
+          </div>
+          <div id="queue-speed" class="mb-3 small text-muted">Average speed: -- MB/s | ETA: --</div>
+          <div class="mb-3">
+            <div class="fw-semibold mb-2">Recent completed</div>
+            <div id="recent-completed" class="list-group list-group-flush"></div>
+          </div>
+          <div class="mb-3">
+            <div class="fw-semibold mb-2">Failed items</div>
+            <div id="failed-items" class="list-group list-group-flush"></div>
+          </div>
+          <button id="download-zip-btn-summary" class="btn btn-success w-100 d-none">Download All as ZIP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/batch.js') }}"></script>
+{% endblock %}

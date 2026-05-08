@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% from 'components/url_input.html' import url_input_bar %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center">
+    <div class="display-1 text-accent fw-bold">404</div>
+    <h2 class="mb-3">Oops! Page Not Found</h2>
+    <p class="text-muted-custom">The page you're looking for has moved, been deleted, or never existed.</p>
+    <div class="my-4">
+      <p class="text-muted-custom">Try downloading something instead:</p>
+      <div class="url-input-wrapper">
+        {{ url_input_bar(placeholder='Paste a URL to download...', action='/download/analyze', button_text='Analyze', show_examples=False) }}
+      </div>
+    </div>
+    <div class="d-flex justify-content-center gap-3 mt-4">
+      <a class="btn btn-outline-primary" href="javascript:history.back()">Go Back</a>
+      <a class="btn btn-primary" href="/">Home</a>
+    </div>
+    <div class="mt-4 text-muted-custom">
+      <i class="bi bi-emoji-frown font-size-2rem"></i>
+    </div>
+  </div>
+</div>
+{% endblock %}

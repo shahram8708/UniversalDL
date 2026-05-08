@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Changelog — UniversalDL{% endblock %}
+
+{% block extra_css %}
+<style>
+  .timeline {
+    position: relative;
+    margin: 40px auto;
+    padding-left: 24px;
+    border-left: 2px solid var(--color-border);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .timeline-dot {
+    position: absolute;
+    left: -10px;
+    top: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+  .timeline-dot-info { background: var(--color-accent-2); }
+  .timeline-dot-success { background: var(--color-success); }
+  .timeline-dot-warning { background: var(--color-warning); }
+  .timeline-dot-danger { background: var(--color-error); }
+  .timeline-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container text-center">
+    <h1>Changelog</h1>
+    <p class="text-muted-custom">Every improvement, fix, and new platform we have added.</p>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <div class="d-flex justify-content-between flex-wrap">
+            <h5>v1.0.0 — Initial Launch</h5>
+            <span class="text-muted-custom">2026-01-15</span>
+          </div>
+          <ul class="text-muted-custom">
+            <li>✨ New: Platform launched with support for 15 core platforms</li>
+            <li>✨ New: Free and Pro tiers</li>
+            <li>✨ New: Browser extension for Chrome and Firefox</li>
+            <li>✨ New: Mobile PWA with Web Share Target</li>
+            <li>✨ New: REST API for Pro users</li>
+            <li>✨ New: Batch download queue</li>
+            <li>✨ New: Channel subscription monitor</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot timeline-dot-info"></div>
+        <div class="timeline-card">
+          <div class="d-flex justify-content-between flex-wrap">
+            <h5>v1.1.0 — Batch Downloads and API</h5>
+            <span class="text-muted-custom">2026-02-01</span>
+          </div>
+          <ul class="text-muted-custom">
+            <li>✨ New: REST API endpoints /api/v1/*</li>
+            <li>✨ New: Batch download with ZIP export</li>
+            <li>✨ New: API key management dashboard</li>
+            <li>🔧 Improved: TikTok extractor watermark removal reliability</li>
+            <li>🐛 Fixed: Instagram stories extraction for new story format</li>
+            <li>🐛 Fixed: SoundCloud client_id rotation when ID expires</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot timeline-dot-success"></div>
+        <div class="timeline-card">
+          <div class="d-flex justify-content-between flex-wrap">
+            <h5>v1.2.0 — Subtitle Engine</h5>
+            <span class="text-muted-custom">2026-02-20</span>
+          </div>
+          <ul class="text-muted-custom">
+            <li>✨ New: Subtitle download for YouTube with auto and manual tracks</li>
+            <li>✨ New: Soft embed subtitle mode</li>
+            <li>✨ New: Hard burn-in subtitle mode via FFmpeg</li>
+            <li>✨ New: 50+ language subtitle support</li>
+            <li>🔧 Improved: Segment stitcher performance for HLS</li>
+            <li>🔧 Improved: Metadata injection includes chapter markers</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot timeline-dot-warning"></div>
+        <div class="timeline-card">
+          <div class="d-flex justify-content-between flex-wrap">
+            <h5>v1.3.0 — Channel Monitor</h5>
+            <span class="text-muted-custom">2026-03-10</span>
+          </div>
+          <ul class="text-muted-custom">
+            <li>✨ New: Channel subscription monitor</li>
+            <li>✨ New: Hourly, daily, weekly polling frequency</li>
+            <li>✨ New: Deduplication via known_content_ids</li>
+            <li>✨ New: Email notifications for new subscription content</li>
+            <li>🔧 Improved: YouTube extractor updated for new playlist format</li>
+            <li>🐛 Fixed: Bilibili extractor for BV ID format changes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot timeline-dot-danger"></div>
+        <div class="timeline-card">
+          <div class="d-flex justify-content-between flex-wrap">
+            <h5>v1.4.0 — Admin Panel and Security</h5>
+            <span class="text-muted-custom">2026-03-25</span>
+          </div>
+          <ul class="text-muted-custom">
+            <li>✨ New: Complete admin panel with 6 pages</li>
+            <li>✨ New: Extractor health check monitoring</li>
+            <li>✨ New: Audit logging for sensitive actions</li>
+            <li>🔧 Improved: Rate limiting by API key for Pro users</li>
+            <li>🔧 Improved: Password reset emails with HTML templates</li>
+            <li>🔒 Security: Added CSP headers, HSTS, and X-Frame-Options</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <div class="d-flex justify-content-between flex-wrap">
+            <h5>v1.5.0 — PWA and Mobile</h5>
+            <span class="text-muted-custom">2026-04-15</span>
+          </div>
+          <ul class="text-muted-custom">
+            <li>✨ New: Progressive Web App with offline support</li>
+            <li>✨ New: Web Share Target API integration</li>
+            <li>✨ New: Service worker with cache-first static assets</li>
+            <li>✨ New: Complete public documentation at /docs</li>
+            <li>✨ New: Sitemap.xml and robots.txt</li>
+            <li>🔧 Improved: Landing page with animated demo</li>
+            <li>🔧 Improved: Blog system with categories and search</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 text-center mt-5">
+      <h4>Subscribe to updates</h4>
+      <p class="text-muted-custom">Get notified of major platform updates and new features.</p>
+      <form id="changelog-subscribe" class="d-flex flex-column flex-md-row gap-2 justify-content-center">
+        <input class="form-control" type="email" placeholder="Email address" required>
+        <button class="btn btn-primary" type="submit">Notify Me</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+  (function () {
+    var form = document.getElementById("changelog-subscribe");
+    if (!form) {
+      return;
+    }
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (window.bootstrap && bootstrap.Toast) {
+        var container = document.querySelector(".toast-container");
+        if (!container) {
+          container = document.createElement("div");
+          container.className = "toast-container position-fixed bottom-0 end-0 p-3";
+          document.body.appendChild(container);
+        }
+        var toast = document.createElement("div");
+        toast.className = "toast theme-toast theme-toast-success";
+        toast.innerHTML = '<div class="toast-body">Thanks! We will notify you of major updates.</div>';
+        container.appendChild(toast);
+        new bootstrap.Toast(toast).show();
+      }
+      form.reset();
+    });
+  })();
+</script>
+{% endblock %}

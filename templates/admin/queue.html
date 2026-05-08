@@ -1,0 +1,196 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Job Queue Monitor{% endblock %}
+
+{% block admin_content %}
+  {% if not celery_available %}
+    <div class="alert alert-danger">Celery workers are not responding. Check that celery_worker.py is running.</div>
+  {% else %}
+    <div class="alert alert-success d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle"></i>
+      Celery Connected
+    </div>
+  {% endif %}
+
+  <div class="row g-3">
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-value" data-queue-stat="active">{{ active_tasks|length }}</div>
+        <div class="admin-kpi-label">Active Tasks</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-value" data-queue-stat="reserved">{{ reserved_tasks|length }}</div>
+        <div class="admin-kpi-label">Reserved Tasks</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-value" data-queue-stat="downloads">{{ downloads_queue_depth }}</div>
+        <div class="admin-kpi-label">Downloads Queue</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-value" data-queue-stat="convert">{{ convert_queue_depth }}</div>
+        <div class="admin-kpi-label">Convert Queue</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-3 mt-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <h5 class="m-0">Currently Processing</h5>
+      <span class="small text-muted-custom">Active tasks</span>
+    </div>
+    <div class="table-responsive mt-3">
+      <table class="table admin-table mb-0">
+        <thead>
+          <tr>
+            <th>Task ID</th>
+            <th>Task</th>
+            <th>Started</th>
+            <th>Worker</th>
+            <th>Args</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in active_tasks %}
+            {% set task_name = (task.name or '') %}
+            <tr>
+              <td class="font-mono">{{ task.task_id[:8] if task.task_id else '—' }}</td>
+              <td>{{ task_name.replace('tasks.', '').replace('_', ' ') | title }}</td>
+              <td>{{ task.time_start_dt | timeago if task.time_start_dt else '—' }}</td>
+              <td>{{ task.worker or '—' }}</td>
+              <td>
+                {% if task.job %}
+                  {{ task.job.title or task.job.url or task.job.id }}
+                {% else %}
+                  {{ task.args | string | truncate(40) }}
+                {% endif %}
+              </td>
+              <td class="text-end">
+                {% if task.job %}
+                  <button class="btn btn-sm btn-outline-danger cancel-job-btn" data-job-id="{{ task.job.id }}">Cancel</button>
+                {% else %}
+                  <span class="text-muted-custom">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center text-muted-custom">No active tasks</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card p-3 mt-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <h5 class="m-0">Queued — Not Started Yet</h5>
+      <span class="small text-muted-custom">Reserved tasks</span>
+    </div>
+    <div class="table-responsive mt-3">
+      <table class="table admin-table mb-0">
+        <thead>
+          <tr>
+            <th>Task ID</th>
+            <th>Task</th>
+            <th>ETA</th>
+            <th>Worker</th>
+            <th>Args</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in reserved_tasks %}
+            {% set task_name = (task.name or '') %}
+            <tr>
+              <td class="font-mono">{{ task.task_id[:8] if task.task_id else '—' }}</td>
+              <td>{{ task_name.replace('tasks.', '').replace('_', ' ') | title }}</td>
+              <td>{{ task.eta or '—' }}</td>
+              <td>{{ task.worker or '—' }}</td>
+              <td>
+                {% if task.job %}
+                  {{ task.job.title or task.job.url or task.job.id }}
+                {% else %}
+                  {{ task.args | string | truncate(40) }}
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center text-muted-custom">No reserved tasks</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card p-3 mt-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <h5 class="m-0">Recent Failed Jobs (last 20)</h5>
+      <span class="small text-muted-custom">Retry failed downloads</span>
+    </div>
+    <div class="table-responsive mt-3">
+      <table class="table admin-table mb-0">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Platform</th>
+            <th>Title</th>
+            <th>User</th>
+            <th>Error</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for job in recent_failed_jobs %}
+            <tr>
+              <td>{{ job.created_at | timeago }}</td>
+              <td>{{ job.platform or 'Unknown' }}</td>
+              <td>{{ job.title | truncate(40) if job.title else '—' }}</td>
+              <td>{{ job.user.email if job.user else 'Anonymous' }}</td>
+              <td title="{{ job.error_message }}">{{ job.error_message | truncate(50) if job.error_message else '—' }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary retry-job-btn" data-job-id="{{ job.id }}">Retry</button>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center text-muted-custom">No failed jobs</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card p-3 mt-3">
+    <h5 class="m-0">Worker Status</h5>
+    {% if worker_stats %}
+      <div class="row mt-3">
+        {% for name, stats in worker_stats.items() %}
+          {% set pool = stats.pool or {} %}
+          {% set total = stats.total or {} %}
+          {% set rusage = stats.rusage or {} %}
+          <div class="col-12 col-md-6">
+            <div class="border rounded p-3 mb-3">
+              <div class="fw-semibold">{{ name }}</div>
+              <div class="small text-muted-custom">Pool: {{ pool.get('name') or pool.get('implementation') or '—' }}</div>
+              <div class="small text-muted-custom">Concurrency: {{ pool.get('max-concurrency') or pool.get('max_concurrency') or '—' }}</div>
+              <div class="small text-muted-custom">Processed: {{ total.get('processed') or '—' }}</div>
+              <div class="small text-muted-custom">Load: {{ rusage.get('ru_utime') or '—' }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-muted-custom mt-2">No worker stats available</div>
+    {% endif %}
+  </div>
+{% endblock %}

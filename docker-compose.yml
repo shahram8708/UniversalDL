@@ -1,0 +1,131 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: universaldl_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: universaldl
+      POSTGRES_USER: universaldl
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme_in_production}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - universaldl_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U universaldl -d universaldl"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: universaldl_redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - universaldl_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "6379:6379"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: universaldl_web
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://universaldl:${DB_PASSWORD:-changeme_in_production}@db:5432/universaldl
+      - REDIS_URL=redis://redis:6379/0
+      - FLASK_ENV=${FLASK_ENV:-production}
+    volumes:
+      - temp_downloads:/tmp/universaldl
+    networks:
+      - universaldl_network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: universaldl_worker
+    restart: unless-stopped
+    command: ["celery", "-A", "celery_worker.celery", "worker", "--loglevel=info", "--concurrency=4", "-Q", "downloads,celery", "--max-tasks-per-child=50"]
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://universaldl:${DB_PASSWORD:-changeme_in_production}@db:5432/universaldl
+      - REDIS_URL=redis://redis:6379/0
+      - PLAYWRIGHT_BROWSERS_PATH=/opt/playwright-browsers
+    volumes:
+      - temp_downloads:/tmp/universaldl
+    networks:
+      - universaldl_network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: universaldl_beat
+    restart: unless-stopped
+    command: ["celery", "-A", "celery_worker.celery", "beat", "--loglevel=info", "--schedule=/tmp/celerybeat-schedule"]
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://universaldl:${DB_PASSWORD:-changeme_in_production}@db:5432/universaldl
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - celerybeat_schedule:/tmp
+    networks:
+      - universaldl_network
+    depends_on:
+      - redis
+      - db
+
+networks:
+  universaldl_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  temp_downloads:
+    driver: local
+  celerybeat_schedule:
+    driver: local

@@ -1,0 +1,46 @@
+{
+  "name": "UniversalDL — Universal Media Downloader",
+  "short_name": "UniversalDL",
+  "description": "Download videos, audio, and media from 200+ platforms. No ads, no registration, no limits.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0F172A",
+  "theme_color": "#E94560",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {"src": "/static/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ],
+  "share_target": {
+    "action": "/download",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Quick Download",
+      "short_name": "Download",
+      "description": "Open the download tool",
+      "url": "/download",
+      "icons": [{"src": "/static/icons/icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+    },
+    {
+      "name": "Batch Download",
+      "short_name": "Batch",
+      "description": "Download multiple URLs",
+      "url": "/download/batch",
+      "icons": [{"src": "/static/icons/icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,29 @@
+{% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+        {% set alert_map = {
+          'success': 'alert-success',
+          'danger': 'alert-danger',
+          'error': 'alert-danger',
+          'warning': 'alert-warning',
+          'info': 'alert-info'
+        } %}
+        {% set icon_map = {
+          'success': 'bi-check-circle-fill',
+          'danger': 'bi-exclamation-triangle-fill',
+          'error': 'bi-exclamation-triangle-fill',
+          'warning': 'bi-exclamation-circle-fill',
+          'info': 'bi-info-circle-fill'
+        } %}
+        {% set alert_class = alert_map.get(category, 'alert-info') %}
+        {% set icon_class = icon_map.get(category, 'bi-info-circle-fill') %}
+        <div class="alert {{ alert_class }} alert-dismissible fade show auto-dismiss d-flex align-items-center gap-2" role="alert">
+          <i class="bi {{ icon_class }}"></i>
+          <span>{{ message }}</span>
+          <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}

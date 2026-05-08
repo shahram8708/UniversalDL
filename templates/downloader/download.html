@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block title %}Download{% endblock %}
+
+{% block extra_css %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
+
+{% block content %}
+<section class="download-hero state-input">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="hero-panel p-4 p-lg-5 rounded-4 shadow-lg">
+          <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold text-heading">Download Anything. From Anywhere.</h1>
+            <p class="lead text-subtle">Paste any URL from YouTube, TikTok, Instagram, Reddit, Twitch, and 200+ more platforms</p>
+          </div>
+          <div class="input-group input-group-lg mb-3">
+            <input id="url-input" type="text" class="form-control" placeholder="Paste any URL - YouTube, TikTok, Instagram, Reddit, Twitch..." aria-label="URL">
+            <button id="analyze-btn" class="btn btn-danger" type="button">
+              <span class="bi bi-lightning-fill me-2"></span>Analyze
+            </button>
+          </div>
+          <div id="url-error" class="text-danger small mb-3"></div>
+          <div class="d-flex flex-wrap gap-3 text-subtle small mb-4 justify-content-center">
+            <span>No account required</span>
+            <span>No ads</span>
+            <span>No malware</span>
+            <span>Files to your device</span>
+          </div>
+          <div class="row g-2 justify-content-center">
+            {% for platform in platform_list[:8] %}
+            <div class="col-6 col-md-3">
+              <div class="status-badge status-disabled w-100 py-2">{{ platform.display_name }}</div>
+            </div>
+            {% endfor %}
+            {% set extra_count = platform_list|length - 8 %}
+            {% if extra_count > 0 %}
+            <div class="col-6 col-md-3">
+              <div class="status-badge status-disabled w-100 py-2">+ {{ extra_count }} more</div>
+            </div>
+            {% endif %}
+          </div>
+          <div class="mt-4 text-center">
+            <select id="quality-select-input" class="form-select d-inline-block w-auto me-2">
+              {% for value, label in form.quality.choices %}
+              <option value="{{ value }}" {% if form.quality.data == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <select id="format-select-input" class="form-select d-inline-block w-auto">
+              {% for value, label in form.format.choices %}
+              <option value="{{ value }}" {% if form.format.data == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="state-analyzing d-none">
+  <div class="container py-5">
+    <div class="card shadow-lg p-5 text-center">
+      <div class="spinner-border text-danger mb-3" role="status"></div>
+      <h5 id="analyze-status">Detecting platform...</h5>
+      <div class="progress mb-3 progress-h-12">
+        <div id="analyze-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated progress-zero" role="progressbar" aria-valuenow="0"></div>
+      </div>
+      <div id="analyze-progress-text" class="small text-muted mb-2">0%</div>
+      <div class="text-muted">Platform: <span id="detected-platform">--</span></div>
+      <button id="cancel-btn" class="btn btn-outline-secondary mt-4">Cancel</button>
+    </div>
+  </div>
+</section>
+
+<section class="state-result d-none">
+  <div class="container py-5">
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <div class="card shadow-lg h-100">
+          <img id="media-thumbnail" src="" class="card-img-top" alt="Thumbnail">
+          <div class="card-body">
+            <h4 id="media-title" class="card-title">Title</h4>
+            <div class="text-muted small mb-2"><span id="media-author"></span> <span class="status-badge status-disabled ms-2" id="media-platform"></span></div>
+            <div class="d-flex flex-wrap gap-3 small text-muted">
+              <span id="media-duration"></span>
+              <span id="media-views"></span>
+              <span id="media-upload-date"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="card shadow-lg h-100">
+          <div class="card-body">
+            <h5 class="mb-3">Download Options</h5>
+            <label class="form-label">Quality</label>
+            <select id="quality-select" class="form-select mb-3"></select>
+            <label class="form-label">Format</label>
+            <select id="format-select" class="form-select mb-3">
+              <option value="mp4">MP4</option>
+              <option value="mkv">MKV</option>
+              <option value="webm">WebM</option>
+              <option value="mp3">MP3</option>
+              <option value="flac">FLAC</option>
+              <option value="m4a">M4A</option>
+              <option value="jpg">JPG</option>
+              <option value="jpeg">JPEG</option>
+              <option value="png">PNG</option>
+            </select>
+
+            <div id="subtitle-section" class="mb-3 d-none">
+              <label class="form-label">Subtitles</label>
+              <select id="subtitle-language" class="form-select mb-2"></select>
+              <div class="form-check">
+                <input id="subtitle-embed" class="form-check-input" type="checkbox">
+                <label class="form-check-label" for="subtitle-embed">Download subtitles</label>
+              </div>
+              <div class="mt-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="subtitle-embed-mode" id="subtitle-embed-soft" value="soft" checked>
+                  <label class="form-check-label" for="subtitle-embed-soft">Soft embed (separate track)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="subtitle-embed-mode" id="subtitle-embed-hard" value="hard">
+                  <label class="form-check-label" for="subtitle-embed-hard">Hard burn in</label>
+                </div>
+              </div>
+            </div>
+
+            <a class="btn btn-link px-0" data-bs-toggle="collapse" href="#advanced-options" role="button" aria-expanded="false" aria-controls="advanced-options">Advanced options</a>
+            <div class="collapse" id="advanced-options">
+              <div class="form-check">
+                <input id="metadata-toggle" class="form-check-input" type="checkbox" checked>
+                <label class="form-check-label" for="metadata-toggle">Embed metadata</label>
+              </div>
+              <div class="form-check">
+                <input id="chapters-toggle" class="form-check-input" type="checkbox">
+                <label class="form-check-label" for="chapters-toggle">Embed chapters</label>
+              </div>
+            </div>
+
+            <div class="mt-3 text-muted" id="file-size-estimate">Estimated size: --</div>
+            <button id="download-btn" class="btn btn-danger btn-lg w-100 mt-4">Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="state-downloading d-none">
+  <div class="container py-5">
+    <div class="card shadow-lg p-4">
+      <h5 id="download-title" class="mb-3">Downloading...</h5>
+      <div class="progress mb-3 progress-h-12">
+        <div id="download-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated progress-zero" role="progressbar" aria-valuenow="0"></div>
+      </div>
+      <div id="status-text" class="text-muted small">Preparing...</div>
+      <button id="cancel-btn-secondary" class="btn btn-outline-secondary btn-sm mt-3">Cancel</button>
+    </div>
+  </div>
+</section>
+
+<section class="state-success d-none">
+  <div class="container py-5">
+    <div class="alert alert-success p-4 text-center">
+      <div class="bi bi-check-circle display-5 mb-3"></div>
+      <h4>Download Complete!</h4>
+      <p id="success-filename" class="mb-3">Your file is ready</p>
+      <a id="download-link" href="#" class="btn btn-success btn-lg">Download File</a>
+      <div class="mt-3">
+        <a id="download-again-btn" href="#" class="btn btn-outline-secondary">Download Again</a>
+        <button id="try-another-btn" class="btn btn-outline-secondary">Try Another URL</button>
+      </div>
+    </div>
+    {% if not current_user.is_authenticated %}
+    <div class="alert alert-info text-center alert-dismissible fade show" role="alert">
+      Want to save download history, enable batch downloads, and schedule auto downloads? Create a free account.
+      <div class="mt-2">
+        <a class="btn btn-primary" href="{{ url_for('auth.register') }}">Create Free Account</a>
+        <button type="button" class="btn btn-link" data-bs-dismiss="alert">Skip</button>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="state-error d-none">
+  <div class="container py-5">
+    <div class="alert alert-danger p-4 text-center">
+      <div id="error-icon" class="bi bi-exclamation-triangle display-5 mb-3"></div>
+      <h4>Download failed</h4>
+      <p id="error-message">Something went wrong.</p>
+      <a id="error-support-link" class="text-accent d-none" href="#">Request Support</a>
+      <button class="btn btn-outline-secondary" onclick="resetToInput()">Try Again</button>
+    </div>
+  </div>
+</section>
+
+<section class="container pb-5">
+  <div class="text-muted text-center small">
+    Supported platforms: YouTube, TikTok, Instagram, Twitter, Reddit, Twitch, Vimeo, SoundCloud, Bilibili, Facebook, and 200+ more.
+    <a href="{{ url_for('main.platforms') }}">View all</a>
+  </div>
+</section>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="download-toast" class="toast" role="alert">
+    <div class="toast-body">Message</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/progress.js') }}"></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/download.js') }}"></script>
+{% endblock %}

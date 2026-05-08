@@ -1,0 +1,21 @@
+{% macro platform_badge(platform_id, size='sm') %}
+  {% set icons = {
+    'youtube': 'bi-youtube',
+    'tiktok': 'bi-music-note-beamed',
+    'instagram': 'bi-instagram',
+    'twitter': 'bi-twitter',
+    'reddit': 'bi-reddit',
+    'twitch': 'bi-twitch',
+    'vimeo': 'bi-film',
+    'soundcloud': 'bi-soundwave',
+    'spotify': 'bi-spotify',
+    'facebook': 'bi-facebook'
+  } %}
+  {% set icon = icons.get(platform_id, 'bi-app') %}
+  {% set platform_key = (platform_id or 'generic')|lower|replace('_', '-') %}
+  {% set label = (platform_id or 'generic')|replace('_', ' ')|title %}
+  <span class="badge platform-badge platform-{{ platform_key }} {% if size == 'lg' %}badge-lg{% endif %}">
+    <i class="bi {{ icon }}"></i>
+    {{ label }}
+  </span>
+{% endmacro %}

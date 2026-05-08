@@ -1,0 +1,47 @@
+{% macro quality_selector(media_info={}, default_quality='best', default_format='mp4') %}
+  {% set qualities = media_info.qualities if media_info and media_info.qualities else ['4k', '1080p', '720p', '480p', '360p', 'audio'] %}
+  <div class="row g-3 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label">Quality</label>
+      <select class="form-select" name="quality" id="quality-select">
+        {% for quality in qualities %}
+          {% if quality == 'audio' %}
+            {% set label = 'Audio Only' %}
+          {% elif quality == '4k' %}
+            {% set label = '4K' %}
+          {% else %}
+            {% set label = quality|upper %}
+          {% endif %}
+          <option value="{{ quality }}" {% if quality == default_quality %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Format</label>
+      <select class="form-select" name="format" id="format-select">
+        {% for fmt in ['mp4', 'mkv', 'webm', 'mp3', 'flac', 'm4a', 'jpg', 'jpeg', 'png'] %}
+          <option value="{{ fmt }}" {% if fmt == default_format %}selected{% endif %}>{{ fmt|upper }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="subtitle-toggle" name="subtitle_embed">
+        <label class="form-check-label" for="subtitle-toggle">Embed subtitles</label>
+      </div>
+      <select class="form-select mt-2" name="subtitle_language" id="subtitle-language">
+        <option value="">Subtitle language</option>
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="es">Spanish</option>
+      </select>
+    </div>
+  </div>
+  <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="metadata-toggle" name="embed_metadata">
+      <label class="form-check-label" for="metadata-toggle">Embed metadata</label>
+    </div>
+    <small class="text-muted-custom size-estimate">Estimated size: --</small>
+  </div>
+{% endmacro %}

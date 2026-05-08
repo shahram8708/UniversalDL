@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UniversalDL Extension Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-logo">
+      <div class="logo-box">UDL</div>
+      <div>
+        <h1>UniversalDL Extension Settings</h1>
+        <p>Configure server connection and default download behavior</p>
+      </div>
+    </div>
+    <span class="version-tag">v1.0.0</span>
+  </header>
+
+  <main>
+    <section class="grid-two">
+      <div>
+        <article class="card">
+          <h2 class="card-title">Server Connection</h2>
+
+          <label for="serverUrl" class="field-label">UniversalDL Server URL</label>
+          <input id="serverUrl" type="url" placeholder="http://localhost:5000" value="http://localhost:5000">
+          <p class="field-help">The URL where your UniversalDL server is running.</p>
+
+          <div class="connection-row">
+            <button id="testConnectionBtn" class="btn-primary" type="button">Test Connection</button>
+            <div class="status-pill" id="connectionStatus">
+              <span class="status-dot checking" id="connectionStatusDot"></span>
+              <span id="connectionStatusText">Not tested</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <label for="apiKey" class="field-label">API Key (Pro users only)</label>
+          <div class="input-with-action">
+            <input id="apiKey" type="password" placeholder="Paste your API key">
+            <button id="toggleApiKeyVisibility" class="btn-secondary" type="button">Show</button>
+          </div>
+          <p class="field-help">Get your API key from UniversalDL Settings API Keys.</p>
+          <button id="saveApiKeyBtn" class="btn-secondary" type="button">Save API Key</button>
+
+          <div class="plan-status" id="planStatus">Plan status will appear after connection test</div>
+        </article>
+      </div>
+
+      <div>
+        <article class="card">
+          <h2 class="card-title">Default Settings</h2>
+
+          <label for="defaultQuality" class="field-label">Default quality</label>
+          <select id="defaultQuality">
+            <option value="best">Best Available</option>
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+            <option value="audio_only">Audio Only</option>
+          </select>
+
+          <label class="field-label">Default format</label>
+          <div class="format-pills" id="defaultFormatPills">
+            <button type="button" class="format-pill active" data-format="mp4">MP4</button>
+            <button type="button" class="format-pill" data-format="mkv">MKV</button>
+            <button type="button" class="format-pill" data-format="mp3">MP3</button>
+            <button type="button" class="format-pill" data-format="flac">FLAC</button>
+          </div>
+
+          <label for="subtitlePreference" class="field-label">Subtitle preference</label>
+          <select id="subtitlePreference">
+            <option value="none">None</option>
+            <option value="download_if_available">Download if available</option>
+            <option value="always_include">Always include</option>
+          </select>
+
+          <div class="toggle-row">
+            <div>
+              <label for="embedMetadata">Embed metadata (title, artist, thumbnail)</label>
+            </div>
+            <label class="switch">
+              <input id="embedMetadata" type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="card-title">Extension Behavior</h2>
+
+          <div class="toggle-row">
+            <div>
+              <label for="autoAnalyze">Auto analyze when popup opens</label>
+              <p class="field-help">Automatically analyze current page when you click the extension icon</p>
+            </div>
+            <label class="switch">
+              <input id="autoAnalyze" type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <label for="showFloatingButton">Show floating download button</label>
+              <p class="field-help">Show a download button on supported platform pages</p>
+            </div>
+            <label class="switch">
+              <input id="showFloatingButton" type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <label for="notifyComplete">Notifications</label>
+              <p class="field-help">Show notification when downloads complete</p>
+            </div>
+            <label class="switch">
+              <input id="notifyComplete" type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <label for="badgeJobs">Badge count</label>
+              <p class="field-help">Show download count badge on extension icon</p>
+            </div>
+            <label class="switch">
+              <input id="badgeJobs" type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="shortcut-box">
+            <div class="shortcut-actions">
+              <button id="openPopupBtn" class="btn-primary" type="button">Open Popup</button>
+              <button id="quickDownloadBtn" class="btn-secondary" type="button">Quick Download Current Page</button>
+            </div>
+            <p class="field-help">Buttons are easier than keyboard shortcuts and work from this settings page too.</p>
+            <p class="field-help">If you still want shortcuts, you can assign them from Chrome shortcuts.</p>
+            <a id="shortcutLink" href="chrome://extensions/shortcuts">Customize shortcuts</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <article class="card full-width">
+      <h2 class="card-title">Supported Platforms</h2>
+      <div class="platform-grid">
+        <span class="platform-chip active">YouTube</span>
+        <span class="platform-chip active">TikTok</span>
+        <span class="platform-chip active">Instagram</span>
+        <span class="platform-chip active">Twitter/X</span>
+        <span class="platform-chip active">Reddit</span>
+        <span class="platform-chip active">Twitch</span>
+        <span class="platform-chip active">Vimeo</span>
+        <span class="platform-chip active">SoundCloud</span>
+        <span class="platform-chip active">Bilibili</span>
+        <span class="platform-chip active">Facebook</span>
+        <span class="platform-chip active">Dailymotion</span>
+        <span class="platform-chip active">Spotify</span>
+        <span class="platform-chip active">LinkedIn</span>
+        <span class="platform-chip active">Pinterest</span>
+        <span class="platform-chip active">Podcast RSS</span>
+        <span class="platform-chip limited">Coursera <em>Preview Only</em></span>
+        <span class="platform-chip active">Behance</span>
+        <span class="platform-chip active">Imgur</span>
+        <span class="platform-chip drm">Netflix <em>DRM Protected</em></span>
+      </div>
+    </article>
+
+    <article class="card full-width">
+      <h2 class="card-title">How To Install And Get Started</h2>
+      <ol class="steps-list">
+        <li>Install UniversalDL server dependencies</li>
+        <li>Run command python run.py</li>
+        <li>Enter server URL above and test connection</li>
+        <li>Start downloading from supported platforms</li>
+      </ol>
+      <button id="openWebsiteBtn" class="btn-primary" type="button">Open UniversalDL Website</button>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <span id="saveStatus">Settings saved automatically</span>
+    <div class="footer-links">
+      <span>v1.0.0</span>
+      <a href="https://github.com" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="https://universaldl.com/contact" target="_blank" rel="noreferrer">Report a Bug</a>
+    </div>
+  </footer>
+
+  <script src="options.js"></script>
+</body>
+</html>

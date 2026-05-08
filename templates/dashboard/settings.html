@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="h3 mb-1">Account Settings</h1>
+      <p class="text-muted mb-0">Manage your profile, security, preferences, and privacy</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      {% if is_pro %}
+        <span class="status-badge status-active">Pro Plan</span>
+        {% if plan_expires %}
+          <span class="small text-muted">Expires {{ plan_expires.strftime('%b %d, %Y') }}</span>
+        {% endif %}
+      {% else %}
+        <span class="status-badge status-disabled">Free Plan</span>
+        <a class="btn btn-sm btn-outline-primary" href="/upgrade">Upgrade</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if active_tab == 'profile' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-profile" type="button" role="tab" aria-controls="tab-profile" aria-selected="true">
+        <i class="bi bi-person me-1"></i>Profile
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if active_tab == 'security' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-security" type="button" role="tab" aria-controls="tab-security" aria-selected="false">
+        <i class="bi bi-shield-lock me-1"></i>Security
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if active_tab == 'preferences' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-preferences" type="button" role="tab" aria-controls="tab-preferences" aria-selected="false">
+        <i class="bi bi-sliders me-1"></i>Preferences
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if active_tab == 'privacy' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-privacy" type="button" role="tab" aria-controls="tab-privacy" aria-selected="false">
+        <i class="bi bi-eye-slash me-1"></i>Privacy and Data
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content pt-4">
+    <div class="tab-pane fade {% if active_tab == 'profile' %}show active{% endif %}" id="tab-profile" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header fw-semibold">Profile Information</div>
+        <div class="card-body">
+          <form method="post" action="/settings">
+            {{ profile_form.hidden_tag() }}
+            <input type="hidden" name="form_name" value="profile">
+            <div class="mb-3">
+              {{ profile_form.display_name.label(class="form-label") }}
+              {{ profile_form.display_name(id="profile-display-name", class="form-control", placeholder="How should we call you?") }}
+              <div class="form-text">This name is shown in greetings and notifications.</div>
+            </div>
+            <div class="mb-3">
+              {{ profile_form.email.label(class="form-label") }}
+              {{ profile_form.email(id="profile-email", class="form-control", type="email") }}
+              <div class="form-text">Used for login and notifications.</div>
+              <div class="text-warning small d-none" id="email-change-warning">Changing your email will require you to verify the new address on next login.</div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              {{ profile_form.submit(class="btn btn-primary", data_btn_loader="true", data_loading_text="Saving...") }}
+              <a class="text-muted" href="/settings?tab=profile">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header fw-semibold">Account Info</div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Member since</span>
+            <span>{{ current_user.created_at.strftime('%B %d, %Y') }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Last login</span>
+            <span>{{ current_user.last_login_at|relative_time }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Account ID</span>
+            <span>{{ account_id_prefix }}...</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Login method</span>
+            <span>
+              {% if has_google and has_password %}
+                Email and Google
+              {% elif has_google %}
+                Google OAuth
+              {% else %}
+                Email and Password
+              {% endif %}
+            </span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Current Plan</span>
+            <span>
+              {% if is_pro %}
+                <span class="status-badge status-active">Pro</span>
+                {% if plan_expires %}
+                  <span class="small text-muted ms-2">Expires {{ plan_expires.strftime('%b %d, %Y') }}</span>
+                {% endif %}
+              {% else %}
+                <span class="status-badge status-disabled">Free</span>
+              {% endif %}
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tab-pane fade {% if active_tab == 'security' %}show active{% endif %}" id="tab-security" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header fw-semibold">{% if has_password %}Change Password{% else %}Set New Password{% endif %}</div>
+        <div class="card-body">
+          {% if not has_password %}
+            <div class="alert alert-info">Your account was created with Google login. You can set a password to also enable email login.</div>
+          {% endif %}
+          <form method="post" action="/settings">
+            {{ password_form.hidden_tag() }}
+            <input type="hidden" name="form_name" value="password">
+            {% if has_password %}
+              <div class="mb-3">
+                {{ password_form.current_password.label(class="form-label") }}
+                <div class="input-group">
+                  {{ password_form.current_password(id="current-password", class="form-control", type="password") }}
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="password" data-target="current-password">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+            {% endif %}
+            <div class="mb-3">
+              {{ password_form.new_password.label(class="form-label") }}
+              <div class="input-group">
+                {{ password_form.new_password(id="new-password", class="form-control", type="password") }}
+                <button class="btn btn-outline-secondary" type="button" data-toggle="password" data-target="new-password">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              <div class="password-strength-bar mt-2">
+                <div class="strength-fill" id="password-strength-fill"></div>
+              </div>
+              <div class="small text-muted mt-2">Password requirements</div>
+              <div class="d-flex flex-column gap-1">
+                <div class="small text-muted" id="req-length"><i class="bi bi-x-circle me-1"></i>10+ chars</div>
+                <div class="small text-muted" id="req-upper"><i class="bi bi-x-circle me-1"></i>Uppercase letter</div>
+                <div class="small text-muted" id="req-number"><i class="bi bi-x-circle me-1"></i>Number</div>
+                <div class="small text-muted" id="req-special"><i class="bi bi-x-circle me-1"></i>Special character</div>
+              </div>
+            </div>
+            <div class="mb-3">
+              {{ password_form.confirm_password.label(class="form-label") }}
+              <div class="input-group">
+                {{ password_form.confirm_password(id="confirm-password", class="form-control", type="password") }}
+                <button class="btn btn-outline-secondary" type="button" data-toggle="password" data-target="confirm-password">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              <div id="password-match-indicator" class="small text-muted mt-1"></div>
+            </div>
+            {{ password_form.submit(class="btn btn-primary", data_btn_loader="true", data_loading_text="Updating...") }}
+          </form>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header fw-semibold">Active Sessions</div>
+        <div class="card-body">
+          <p class="text-muted mb-3">For security, we only store minimal session information.</p>
+          <button class="btn btn-outline-danger" id="logout-all-btn">Log Out All Devices</button>
+        </div>
+      </div>
+
+      {% if has_google %}
+        <div class="card">
+          <div class="card-header fw-semibold">Connected Accounts</div>
+          <div class="card-body">
+            {% set email = current_user.email %}
+            {% set at_index = email.find('@') %}
+            {% set masked = email[:3] + '***' + email[at_index:] %}
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-check-circle-fill text-success"></i>
+              <div>
+                <div class="fw-semibold">Google account connected</div>
+                <div class="small text-muted">{{ masked }}</div>
+                <div class="small text-muted">This enables Sign in with Google for your account.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="tab-pane fade {% if active_tab == 'preferences' %}show active{% endif %}" id="tab-preferences" role="tabpanel">
+      <div class="card">
+        <div class="card-header fw-semibold">Download Preferences</div>
+        <div class="card-body">
+          <p class="text-muted">These defaults apply to all new downloads.</p>
+          <form method="post" action="/settings">
+            {{ prefs_form.hidden_tag() }}
+            <input type="hidden" name="form_name" value="preferences">
+            <div class="mb-3">
+              {{ prefs_form.default_quality.label(class="form-label") }}
+              {{ prefs_form.default_quality(class="form-select") }}
+              <div class="form-text">You can always change this per download.</div>
+              {% if not is_pro %}
+                <div class="small text-muted">Free plan max: 1080p</div>
+              {% endif %}
+            </div>
+            <div class="mb-3">
+              {{ prefs_form.default_format.label(class="form-label") }}
+              {{ prefs_form.default_format(class="form-select") }}
+            </div>
+            <hr>
+            <div class="mb-3">
+              <div class="fw-semibold mb-2">Notification Preferences</div>
+              <div class="form-check form-switch">
+                {{ prefs_form.email_notifications(class="form-check-input", id="email-notifications-toggle") }}
+                <label class="form-check-label" for="email-notifications-toggle">Email me when downloads complete</label>
+              </div>
+              <div class="small text-muted">Notifications sent to {{ current_user.email }}</div>
+              {% if not is_pro %}
+                <div class="small text-muted">Subscription notifications available on Pro</div>
+              {% endif %}
+            </div>
+            {{ prefs_form.submit(class="btn btn-primary", data_btn_loader="true", data_loading_text="Saving...") }}
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade {% if active_tab == 'privacy' %}show active{% endif %}" id="tab-privacy" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="fw-semibold">Anonymous Download Mode</div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="anonymous-mode-toggle" {% if current_user.anonymous_mode %}checked{% endif %}>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">When enabled, download URLs are not stored in our database. Your history will only show titles and metadata, not the source URLs.</p>
+          <div class="small text-muted">Anonymous mode does not affect download functionality.</div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header fw-semibold">Your Data</div>
+        <div class="card-body">
+          <p class="text-muted">Download a complete copy of your UniversalDL data including profile, preferences, download history, and subscriptions.</p>
+          <a class="btn btn-outline-primary" href="/settings/download-data">Export My Data (JSON)</a>
+          <div class="small text-muted mt-2">GDPR compliant data export. Typically ready in seconds.</div>
+          <hr>
+          <div class="fw-semibold">Request Data Deletion</div>
+          <p class="text-muted">If you want us to delete all your data, you can delete your account below or contact us at privacy@universaldl.com</p>
+        </div>
+      </div>
+
+      <div class="card border-danger">
+        <div class="card-header fw-semibold text-danger">Delete Account</div>
+        <div class="card-body">
+          <p class="text-muted">Permanently delete your account and all associated data. This action cannot be undone. All your downloads, history, subscriptions, and settings will be deleted immediately.</p>
+          <div class="text-danger small">
+            <div>All download history deleted</div>
+            <div>All subscriptions cancelled</div>
+            <div>All API keys revoked</div>
+            <div>Your email removed from our system</div>
+          </div>
+          <button class="btn btn-outline-danger mt-3" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete My Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Permanently Delete Account?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-danger fw-semibold mb-2">This action cannot be undone.</div>
+        <label class="form-label">Type DELETE to confirm</label>
+        <input class="form-control" id="delete-confirm-input" placeholder="Type DELETE here">
+        <label class="form-label mt-3">Enter your password to confirm</label>
+        <input type="password" class="form-control" id="delete-password-input">
+        <div class="small text-danger mt-2" id="delete-error-message"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-delete-btn" disabled>Delete My Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toast-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}

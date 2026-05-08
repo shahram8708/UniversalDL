@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Supported Platforms{% endblock %}
+
+{% block extra_css %}
+<style>
+  .platform-hero {
+    padding: 80px 0 40px;
+    text-align: center;
+  }
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .platform-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .platform-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+  .platform-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--color-text-on-accent);
+    background: var(--color-accent);
+    margin: 0 auto 12px;
+  }
+  .platform-icon.platform-color-0 { background: var(--color-accent); }
+  .platform-icon.platform-color-1 { background: var(--color-accent-2); }
+  .platform-icon.platform-color-2 { background: var(--color-success); }
+  .platform-icon.platform-color-3 { background: var(--color-warning); }
+  .platform-icon.platform-color-4 { background: var(--color-info); }
+  .platform-icon.platform-color-5 { background: var(--color-text-subtle); }
+  .status-pill {
+    font-size: 0.75rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="platform-hero">
+  <div class="container">
+    <h1>{{ total_count }} Supported Platforms</h1>
+    <p class="text-muted-custom">This page lists every platform currently configured in this workspace, including the Chrome extension entry.</p>
+    <div class="d-flex justify-content-center gap-3 mt-3 text-muted-custom">
+      <span>{{ enabled_count }} Active</span>
+      <span>·</span>
+      <span>{{ total_count }} Total</span>
+      <span>·</span>
+      <span>Updated continuously</span>
+    </div>
+  </div>
+</section>
+
+<section class="py-4 bg-surface-2">
+  <div class="container">
+    <div class="row g-3 align-items-center">
+      <div class="col-lg-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" class="form-control" id="platform-search-input" placeholder="Search platforms...">
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="btn-group w-100" role="group">
+          <button type="button" class="btn btn-outline-primary active" data-category="all">All</button>
+          <button type="button" class="btn btn-outline-primary" data-category="video">Video</button>
+          <button type="button" class="btn btn-outline-primary" data-category="audio">Audio</button>
+          <button type="button" class="btn btn-outline-primary" data-category="social">Social</button>
+          <button type="button" class="btn btn-outline-primary" data-category="image">Image</button>
+          <button type="button" class="btn btn-outline-primary" data-category="other">Other</button>
+        </div>
+      </div>
+      <div class="col-lg-2 text-lg-end">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="platform-status-toggle">
+          <label class="form-check-label" for="platform-status-toggle">Active only</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="platform-grid">
+      {% for platform in platforms %}
+        {% set color_class = 'platform-color-' ~ (loop.index0 % 6) %}
+        <div class="platform-grid-item platform-card" data-name="{{ platform.platform_id }}" data-display="{{ platform.display_name }}" data-category="{{ platform.category }}" data-status="{{ platform.status_label }}">
+          <div class="platform-icon {{ color_class }}">{{ platform.display_name[0] }}</div>
+          <h6 class="text-center mb-2">{{ platform.display_name }}</h6>
+          <div class="text-center">
+            {% if platform.status_label == 'active' %}
+              <span class="status-badge status-active status-pill">✓ Active</span>
+            {% elif platform.status_label == 'degraded' %}
+              <span class="status-badge status-degraded status-pill">⚠ Degraded</span>
+            {% elif platform.status_label == 'down' %}
+              <span class="status-badge status-down status-pill">✗ Down</span>
+            {% else %}
+              <span class="status-badge status-disabled status-pill">Disabled</span>
+            {% endif %}
+          </div>
+          <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
+            {% if platform.requires_headless %}
+              <span class="status-badge status-disabled">JS-rendered</span>
+            {% endif %}
+            {% if platform.requires_proxy %}
+              <span class="status-badge status-disabled">Geo-restricted</span>
+            {% endif %}
+            {% if platform.is_extension %}
+              <span class="status-badge status-active">Extension</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div id="platform-no-results" class="empty-state d-none">
+      <span class="empty-state-icon">🔍</span>
+      No results match your filters.
+    </div>
+    <div id="platform-search-hint" class="empty-state d-none">
+      Start typing to filter...
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-surface-2">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">Platform Details</h2>
+      <p class="section-subtitle">Every platform name from the current configuration.</p>
+    </div>
+    <div class="accordion" id="platformAccordion">
+      {% for platform in platforms %}
+        {% set section_id = 'platform' ~ loop.index0 %}
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading{{ section_id }}">
+            <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ section_id }}">{{ platform.display_name }}</button>
+          </h2>
+          <div id="collapse{{ section_id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#platformAccordion">
+            <div class="accordion-body">
+              <p class="mb-1"><strong>Platform ID:</strong> {{ platform.platform_id }}</p>
+              <p class="mb-1"><strong>Category:</strong> {{ platform.category|title }}</p>
+              <p class="mb-1"><strong>Status:</strong> {{ platform.status_label|title }}</p>
+              <p class="mb-0">{{ platform.detail_note }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="card p-4 p-lg-5">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h3>Missing a platform? Contribute an extractor.</h3>
+          <p class="text-muted-custom">UniversalDL uses a modular extractor system. If you can parse a platform, you can add support in a few files and submit a pull request.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <a class="btn btn-outline-primary me-2" href="https://github.com/universaldl/universaldl" target="_blank" rel="noopener">View on GitHub</a>
+          <a class="btn btn-primary" href="/contact?subject=feature_request">Request a Platform</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

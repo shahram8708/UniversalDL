@@ -1,0 +1,131 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Platform Settings{% endblock %}
+
+{% block admin_content %}
+  <div class="row g-3">
+    <div class="col-12 col-lg-8">
+      <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="card p-3 mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="m-0">Download Limits (Current Session)</h5>
+          </div>
+          <div class="alert alert-warning mt-2">
+            Changes apply to the current server process only. To persist, update the .env file and restart.
+          </div>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              {{ form.max_concurrent_free.label(class="form-label") }}
+              {{ form.max_concurrent_free(class="form-control") }}
+            </div>
+            <div class="col-12 col-md-6">
+              {{ form.max_concurrent_pro.label(class="form-label") }}
+              {{ form.max_concurrent_pro(class="form-control") }}
+            </div>
+            <div class="col-12 col-md-6">
+              {{ form.max_batch_urls_free.label(class="form-label") }}
+              {{ form.max_batch_urls_free(class="form-control") }}
+            </div>
+            <div class="col-12 col-md-6">
+              {{ form.history_retention_days_free.label(class="form-label") }}
+              {{ form.history_retention_days_free(class="form-control") }}
+            </div>
+          </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary" data-btn-loader="true" data-loading-text="Saving...">Save Limits</button>
+          </div>
+        </div>
+
+        <div class="card p-3 mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="m-0">File and Storage</h5>
+            <button type="button" class="btn btn-outline-secondary" id="detect-ffmpeg-btn">Detect</button>
+          </div>
+          <div class="row g-3 mt-1">
+            <div class="col-12">
+              {{ form.ffmpeg_path.label(class="form-label") }}
+              {{ form.ffmpeg_path(class="form-control", placeholder="/usr/bin/ffmpeg") }}
+            </div>
+            <div class="col-12">
+              {{ form.temp_download_dir.label(class="form-label") }}
+              {{ form.temp_download_dir(class="form-control", readonly=true) }}
+              <div class="small text-muted-custom mt-1">Temp directory currently uses {{ temp_dir_size }}</div>
+            </div>
+            <div class="col-12">
+              {{ form.max_file_age_seconds.label(class="form-label") }}
+              {{ form.max_file_age_seconds(class="form-control") }}
+            </div>
+          </div>
+          <div class="mt-3 d-flex gap-2">
+            <button type="button" class="btn btn-outline-danger" id="clear-temp-btn">Clear All Temp Files</button>
+            <button type="submit" class="btn btn-primary" data-btn-loader="true" data-loading-text="Saving...">Save Storage Settings</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="card p-3 mb-3">
+        <h5 class="m-0">Proxy Pool</h5>
+        <div class="d-flex flex-wrap gap-3 mt-2">
+          <div class="small text-muted-custom">Total loaded: {{ proxy_total }}</div>
+          <div class="small text-muted-custom">Healthy: {{ proxy_healthy }}</div>
+          <div class="small text-muted-custom">Failed: {{ proxy_failed }}</div>
+        </div>
+        <div class="small text-muted-custom mt-2">Provider configured: {{ 'Yes' if proxy_provider_configured else 'No' }}</div>
+        <div class="mt-3">
+          <button class="btn btn-outline-primary" id="reload-proxies-btn">Reload Proxies</button>
+        </div>
+      </div>
+
+      <div class="card p-3 mb-3">
+        <h5 class="m-0">Email and Notifications</h5>
+        <div class="small text-muted-custom mt-2">MAIL_SERVER: {{ mail_server or 'Not configured' }}</div>
+        <div class="small text-muted-custom">MAIL_USERNAME: {{ mail_username.split('@')[-1] if mail_username and '@' in mail_username else (mail_username or 'Not configured') }}</div>
+        <div class="mt-3">
+          <button class="btn btn-outline-primary" id="test-email-btn">Send Test Email</button>
+        </div>
+      </div>
+
+      <div class="card p-3">
+        <h5 class="m-0">Cache Management</h5>
+        <div class="small text-muted-custom mt-2">Redis connected: {{ 'Yes' if redis_ok else 'No' }}</div>
+        <div class="mt-3">
+          <button class="btn btn-outline-danger" id="clear-cache-btn">Clear Analysis Cache</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="card p-3 position-sticky sticky-top-1">
+        <h5 class="m-0">System Information</h5>
+        <ul class="list-group list-group-flush mt-2">
+          <li class="list-group-item bg-transparent border-custom">Flask Environment: {{ flask_env }}</li>
+          <li class="list-group-item bg-transparent border-custom">App Version: {{ app_version }}</li>
+          <li class="list-group-item bg-transparent border-custom">Database: {{ db_display }}</li>
+          <li class="list-group-item bg-transparent border-custom">Redis: {{ redis_display }}</li>
+          <li class="list-group-item bg-transparent border-custom">Celery Broker: {{ broker_display }}</li>
+          <li class="list-group-item bg-transparent border-custom">FFmpeg: <span id="ffmpeg-version-text">{{ ffmpeg_version }}</span></li>
+          <li class="list-group-item bg-transparent border-custom">Playwright: {{ 'Installed' if playwright_installed else 'Not installed' }}</li>
+          <li class="list-group-item bg-transparent border-custom">Sentry: {{ 'Configured' if sentry_configured else 'Not configured' }}</li>
+          <li class="list-group-item bg-transparent border-custom">Python: {{ python_version }}</li>
+        </ul>
+
+        <div class="mt-3">
+          <h6 class="m-0">Extractor Summary</h6>
+          <div class="small text-muted-custom mt-2">Total: {{ extractor_total }}</div>
+          <div class="small text-muted-custom">Enabled: {{ extractor_enabled }}</div>
+          <div class="small text-muted-custom">Disabled: {{ extractor_disabled }}</div>
+          <div class="small text-muted-custom">Degraded: {{ extractor_degraded }}</div>
+        </div>
+
+        <div class="mt-3">
+          <h6 class="m-0">Quick Actions</h6>
+          <div class="d-grid gap-2 mt-2">
+            <button class="btn btn-outline-primary" id="trigger-health-btn">Trigger Health Check Now</button>
+            <button class="btn btn-outline-primary" id="trigger-sub-poll-btn">Trigger Subscription Poll Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

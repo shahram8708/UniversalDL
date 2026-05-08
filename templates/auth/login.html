@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div class="auth-page auth-page-split">
+  <div class="auth-shell auth-shell-login">
+    <aside class="auth-panel" aria-hidden="true">
+      <span class="auth-kicker">UniversalDL</span>
+      <h2 class="auth-panel-title">Pick up your downloads where you left off</h2>
+      <p class="auth-panel-subtitle">
+        Login once and manage links, progress, history, and exports from one clean dashboard.
+      </p>
+
+      <div class="auth-panel-grid">
+        <div class="auth-panel-item">
+          <i class="bi bi-lightning-charge"></i>
+          <span>Fast queue processing</span>
+        </div>
+        <div class="auth-panel-item">
+          <i class="bi bi-shield-check"></i>
+          <span>Secure account sessions</span>
+        </div>
+        <div class="auth-panel-item">
+          <i class="bi bi-clock-history"></i>
+          <span>Download history sync</span>
+        </div>
+        <div class="auth-panel-item">
+          <i class="bi bi-stars"></i>
+          <span>Premium quality options</span>
+        </div>
+      </div>
+
+      <div class="auth-panel-note">
+        <i class="bi bi-people-fill"></i>
+        Trusted by creators, students, and teams every day.
+      </div>
+    </aside>
+
+    <div class="auth-card auth-form-card w-100">
+      <div class="auth-logo">
+        <i class="bi bi-play-circle-fill text-accent font-size-2-5rem"></i>
+        <h5 class="mt-2 mb-0">UniversalDL</h5>
+      </div>
+
+      <h4 class="text-center mb-2">Welcome back</h4>
+      <p class="text-center text-muted-custom mb-4">Log in to access your downloads, history, and subscriptions.</p>
+
+      <a class="social-login-btn mb-3" href="/auth/google">
+        <span class="social-login-icon"><i class="bi bi-google"></i></span>
+        <span>Continue with Google</span>
+      </a>
+
+      <div class="divider-text"><span>or continue with email</span></div>
+
+      <form method="post" action="{{ url_for('auth.login') }}" class="auth-form">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+          {{ form.email.label(class="form-label") }}
+          {{ form.email(class="form-control" + (' is-invalid' if form.email.errors else ''), placeholder='you@example.com', autocomplete='email') }}
+          {% for error in form.email.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.password.label(class="form-label") }}
+          <div class="input-group auth-password-group">
+            {{ form.password(id='login-password', class="form-control" + (' is-invalid' if form.password.errors else ''), placeholder='Your password', autocomplete='current-password') }}
+            <button class="btn btn-outline-secondary password-toggle-btn" type="button" data-toggle="password" data-target="login-password" aria-label="Show or hide password">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+          {% for error in form.password.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="auth-form-meta mb-3">
+          <div class="form-check m-0">
+            {{ form.remember_me(class="form-check-input") }}
+            {{ form.remember_me.label(class="form-check-label") }}
+          </div>
+          <a href="{{ url_for('auth.reset_password_request') }}" class="text-muted-custom auth-link-muted">Forgot password?</a>
+        </div>
+
+        {{ form.submit(class="btn btn-primary w-100 auth-submit-btn", data_btn_loader="true", data_loading_text="Logging in...") }}
+      </form>
+
+      <p class="text-center mt-4 text-muted-custom auth-footer-text">
+        Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-accent">Sign Up Free</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

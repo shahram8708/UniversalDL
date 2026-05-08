@@ -1,0 +1,201 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Extractor Manager{% endblock %}
+
+{% block admin_actions %}
+  <button class="btn btn-outline-primary" id="trigger-health-btn">Run All Health Checks</button>
+  <a class="btn btn-outline-secondary" href="{{ url_for('admin.admin_extractors') }}">Refresh</a>
+{% endblock %}
+
+{% block admin_content %}
+  {% set degraded_count = extractors | selectattr('success_rate_7d', 'lt', 90) | list | length %}
+  <div class="d-flex flex-wrap gap-3 mb-3">
+    <div class="small text-muted-custom">{{ enabled_count }} Enabled</div>
+    <div class="small text-muted-custom">{{ disabled_count }} Disabled</div>
+    <div class="small text-muted-custom">{{ degraded_count }} Degraded</div>
+  </div>
+
+  <div class="card p-3">
+    <div class="table-responsive">
+      <table class="table admin-table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>Status</th>
+            <th>Headless</th>
+            <th>Proxy</th>
+            <th>Success Rate</th>
+            <th>Last Success</th>
+            <th>Last Failure</th>
+            <th class="action-col text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for extractor in extractors if extractor.is_enabled %}
+            {% set rate = extractor.success_rate_7d or 0 %}
+            {% set rate_class = 'success' if rate >= 90 else ('warning' if rate >= 70 else 'danger') %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  {% if extractor.logo_url %}
+                    <img src="{{ extractor.logo_url }}" alt="{{ extractor.display_name }}" width="18" height="18">
+                  {% else %}
+                    <div class="admin-avatar admin-avatar-accent">{{ extractor.display_name[:1] }}</div>
+                  {% endif %}
+                  <div>
+                    <div class="fw-semibold">{{ extractor.display_name }}</div>
+                    <div class="small text-muted-custom">{{ extractor.platform_id }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                {% set status_class = 'status-active' if extractor.status_color_value == 'success' else ('status-degraded' if extractor.status_color_value == 'warning' else ('status-down' if extractor.status_color_value in ['danger', 'error'] else 'status-disabled')) %}
+                <span class="extractor-status-badge status-badge {{ status_class }}">{{ extractor.status_label_value | title }}</span>
+              </td>
+              <td>
+                {% if extractor.requires_headless %}
+                  <span class="status-badge status-degraded">Yes</span>
+                {% else %}
+                  <span class="status-badge status-active">No</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if extractor.requires_proxy %}
+                  <span class="status-badge status-degraded">Yes</span>
+                {% else %}
+                  <span class="status-badge status-active">No</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <span>{{ rate | round(1) }}%</span>
+                  <span class="success-rate-mini">
+                    <span class="success-rate-fill {{ rate_class }}" style="width: {{ rate }}%"></span>
+                  </span>
+                </div>
+              </td>
+              <td>{{ extractor.last_success_at | timeago }}</td>
+              <td>
+                <span {% if extractor.failure_reason %}data-bs-toggle="tooltip" title="{{ extractor.failure_reason }}"{% endif %}>
+                  {{ extractor.last_failure_at | timeago if extractor.last_failure_at else 'None' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <button class="btn btn-sm {{ 'btn-success' if extractor.is_enabled else 'btn-secondary' }} extractor-toggle-btn" data-extractor-id="{{ extractor.id }}">
+                  {{ 'Enabled' if extractor.is_enabled else 'Disabled' }}
+                </button>
+                <button class="btn btn-sm btn-outline-primary extractor-test-btn" data-extractor-id="{{ extractor.id }}" data-platform-name="{{ extractor.display_name }}" data-test-url="{{ extractor.default_test_url or '' }}">Test</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#disabledExtractors">Disabled Extractors</button>
+    <div class="collapse mt-3" id="disabledExtractors">
+      <div class="card p-3">
+        <div class="table-responsive">
+          <table class="table admin-table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Status</th>
+                <th>Headless</th>
+                <th>Proxy</th>
+                <th>Success Rate</th>
+                <th>Last Success</th>
+                <th>Last Failure</th>
+                <th class="action-col text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for extractor in extractors if not extractor.is_enabled %}
+                {% set rate = extractor.success_rate_7d or 0 %}
+                {% set rate_class = 'success' if rate >= 90 else ('warning' if rate >= 70 else 'danger') %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      {% if extractor.logo_url %}
+                        <img src="{{ extractor.logo_url }}" alt="{{ extractor.display_name }}" width="18" height="18">
+                      {% else %}
+                        <div class="admin-avatar admin-avatar-muted">{{ extractor.display_name[:1] }}</div>
+                      {% endif %}
+                      <div>
+                        <div class="fw-semibold">{{ extractor.display_name }}</div>
+                        <div class="small text-muted-custom">{{ extractor.platform_id }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="extractor-status-badge status-badge status-disabled">Disabled</span>
+                  </td>
+                  <td>
+                    {% if extractor.requires_headless %}
+                      <span class="status-badge status-degraded">Yes</span>
+                    {% else %}
+                      <span class="status-badge status-active">No</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if extractor.requires_proxy %}
+                      <span class="status-badge status-degraded">Yes</span>
+                    {% else %}
+                      <span class="status-badge status-active">No</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <span>{{ rate | round(1) }}%</span>
+                      <span class="success-rate-mini">
+                        <span class="success-rate-fill {{ rate_class }}" style="width: {{ rate }}%"></span>
+                      </span>
+                    </div>
+                  </td>
+                  <td>{{ extractor.last_success_at | timeago }}</td>
+                  <td>
+                    <span {% if extractor.failure_reason %}data-bs-toggle="tooltip" title="{{ extractor.failure_reason }}"{% endif %}>
+                      {{ extractor.last_failure_at | timeago if extractor.last_failure_at else 'None' }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-secondary extractor-toggle-btn" data-extractor-id="{{ extractor.id }}">Disabled</button>
+                    <button class="btn btn-sm btn-outline-primary extractor-test-btn" data-extractor-id="{{ extractor.id }}" data-platform-name="{{ extractor.display_name }}" data-test-url="{{ extractor.default_test_url or '' }}">Test</button>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="8" class="text-center text-muted-custom">No disabled extractors</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="testExtractorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Test Extractor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Custom test URL (optional — uses default if empty)</label>
+            <input type="url" class="form-control test-url-input" placeholder="https://">
+          </div>
+          <div class="test-result-area"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary run-test-btn">Run Test</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

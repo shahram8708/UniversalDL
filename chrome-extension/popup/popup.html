@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UniversalDL</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="popup-header">
+    <div class="popup-logo">
+      <div class="popup-logo-icon" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="11" fill="#E94560" />
+          <path d="M12 5V14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8 11L12 15L16 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="6" y="17" width="12" height="2" rx="1" fill="white"/>
+        </svg>
+      </div>
+      <h1 class="popup-title">UniversalDL</h1>
+    </div>
+    <div class="popup-header-actions">
+      <span class="connection-dot checking" id="connectionDot" title="Checking connection"></span>
+      <button class="popup-settings-btn" id="openSettingsBtn" title="Open settings" aria-label="Open settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 8.5A3.5 3.5 0 1 0 12 15.5A3.5 3.5 0 1 0 12 8.5Z" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M19.4 15A1.65 1.65 0 0 0 19.73 16.82L19.79 16.88A2 2 0 0 1 16.96 19.71L16.9 19.65A1.65 1.65 0 0 0 15.08 19.32A1.65 1.65 0 0 0 14 20.85V21A2 2 0 1 1 10 21V20.91A1.65 1.65 0 0 0 8.92 19.39A1.65 1.65 0 0 0 7.1 19.72L7.04 19.78A2 2 0 1 1 4.21 16.95L4.27 16.89A1.65 1.65 0 0 0 4.6 15.07A1.65 1.65 0 0 0 3.07 14H3A2 2 0 1 1 3 10H3.09A1.65 1.65 0 0 0 4.61 8.92A1.65 1.65 0 0 0 4.28 7.1L4.22 7.04A2 2 0 1 1 7.05 4.21L7.11 4.27A1.65 1.65 0 0 0 8.93 4.6H9A1.65 1.65 0 0 0 10 3.07V3A2 2 0 1 1 14 3V3.09A1.65 1.65 0 0 0 15.08 4.61A1.65 1.65 0 0 0 16.9 4.28L16.96 4.22A2 2 0 1 1 19.79 7.05L19.73 7.11A1.65 1.65 0 0 0 19.4 8.93V9A1.65 1.65 0 0 0 20.93 10H21A2 2 0 1 1 21 14H20.91A1.65 1.65 0 0 0 19.39 15.08Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="current-page-section" id="currentPageSection">
+    <div class="page-info-row">
+      <img class="page-favicon" id="pageFavicon" alt="Favicon" src="../icons/icon16.svg">
+      <div class="page-url" id="currentPageUrl" title=""></div>
+      <span class="platform-badge" id="platformBadge" style="display:none;"></span>
+    </div>
+    <button class="btn-download-page" id="downloadPageBtn" type="button">Download This Page</button>
+  </div>
+
+  <div class="custom-url-section" id="customUrlSection">
+    <div class="url-input-row">
+      <input class="url-input" id="customUrlInput" type="text" placeholder="Or paste any other URL..." autocomplete="off">
+      <button class="btn-analyze" id="analyzeBtn" type="button">Analyze</button>
+    </div>
+    <p class="helper-text">Download from any supported platform</p>
+    <p class="inline-error" id="inlineValidationError" style="display:none;"></p>
+  </div>
+
+  <div class="result-panel" id="resultPanel" style="display:none;">
+    <div class="result-media-info">
+      <img class="result-thumbnail" id="resultThumbnail" alt="Media thumbnail" src="../icons/icon48.svg">
+      <div class="result-meta">
+        <h3 class="result-title" id="resultTitle"></h3>
+        <p class="result-author" id="resultAuthor"></p>
+        <div class="result-badges">
+          <span class="platform-badge" id="resultPlatformBadge"></span>
+          <span class="platform-badge" id="resultDurationBadge" style="display:none;"></span>
+        </div>
+      </div>
+    </div>
+
+    <label class="field-label" for="qualitySelect">Quality</label>
+    <select class="quality-select" id="qualitySelect"></select>
+
+    <label class="field-label">Format</label>
+    <div class="format-pills" id="formatPills">
+      <button class="format-pill active" data-format="mp4" type="button">MP4</button>
+      <button class="format-pill" data-format="mkv" type="button">MKV</button>
+      <button class="format-pill" data-format="webm" type="button">WEBM</button>
+      <button class="format-pill" data-format="mp3" type="button">MP3</button>
+      <button class="format-pill" data-format="flac" type="button">FLAC</button>
+      <button class="format-pill" data-format="m4a" type="button">M4A</button>
+      <button class="format-pill" data-format="wav" type="button">WAV</button>
+      <button class="format-pill" data-format="jpg" type="button">JPG</button>
+      <button class="format-pill" data-format="png" type="button">PNG</button>
+      <button class="format-pill" data-format="webp" type="button">WEBP</button>
+      <button class="format-pill" data-format="gif" type="button">GIF</button>
+    </div>
+
+    <div class="subtitle-row" id="subtitleRow" style="display:none;">
+      <label class="subtitle-toggle">
+        <input type="checkbox" id="subtitleToggle">
+        <span>Include subtitles</span>
+      </label>
+      <select class="quality-select subtitle-language" id="subtitleLanguageSelect"></select>
+    </div>
+
+    <button class="btn-start-download" id="startDownloadBtn" type="button">Download</button>
+  </div>
+
+  <div class="progress-view" id="progressView" style="display:none;">
+    <div class="progress-header">
+      <img class="progress-thumb" id="progressThumb" src="../icons/icon48.svg" alt="Progress thumbnail">
+      <div class="progress-meta">
+        <div class="progress-title" id="progressTitle"></div>
+        <div class="progress-status" id="progressStatus">Preparing download...</div>
+      </div>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%;"></div>
+    </div>
+    <div class="progress-info-row">
+      <span id="progressPercent">0%</span>
+      <span id="progressSpeed">0 KB/s</span>
+      <span id="progressEta">--</span>
+    </div>
+    <div class="progress-actions">
+      <button class="btn-cancel" id="cancelDownloadBtn" type="button">Cancel</button>
+    </div>
+  </div>
+
+  <div class="active-jobs-section" id="activeJobsSection" style="display:none;">
+    <h2 class="section-title">Active Downloads</h2>
+    <div id="activeJobsList"></div>
+  </div>
+
+  <div class="state-loading" id="stateLoading" style="display:none;">
+    <div class="spinner"></div>
+    <p class="state-heading" id="loadingMessage">Detecting platform...</p>
+  </div>
+
+  <div class="state-error" id="stateError" style="display:none;">
+    <span class="state-icon" aria-hidden="true">⚠️</span>
+    <h2 class="state-heading">Something went wrong</h2>
+    <p class="state-description" id="errorMessage">Unable to process this URL right now.</p>
+    <div class="state-actions">
+      <button class="btn-start-download" id="retryBtn" type="button">Try Again</button>
+      <button class="btn-analyze" id="openInBrowserBtn" type="button">Open in Browser</button>
+    </div>
+  </div>
+
+  <div class="state-drm" id="stateDrm" style="display:none;">
+    <span class="state-icon" aria-hidden="true">🔒</span>
+    <h2 class="state-heading">DRM Protected Content</h2>
+    <p class="state-description">This content is protected by DRM encryption and cannot be downloaded. Only DRM free public content can be downloaded.</p>
+    <button class="btn-start-download" id="openWebsiteFromDrmBtn" type="button">Open UniversalDL website</button>
+  </div>
+
+  <div class="state-unsupported" id="stateUnsupported" style="display:none;">
+    <span class="state-icon" aria-hidden="true">ℹ️</span>
+    <h2 class="state-heading">Platform not yet supported</h2>
+    <p class="state-description">UniversalDL supports 200+ platforms. This one is not supported yet.</p>
+    <a class="footer-link" id="requestSupportLink" href="#">Request Support</a>
+  </div>
+
+  <div class="state-success" id="stateSuccess" style="display:none;">
+    <span class="state-icon" aria-hidden="true">✓</span>
+    <h2 class="state-heading">Download Complete!</h2>
+    <p class="state-description" id="successFileInfo">Your file is ready.</p>
+    <div class="state-actions">
+      <button class="btn-start-download" id="downloadAnotherBtn" type="button">Download Another</button>
+      <button class="btn-analyze" id="openDownloadsFolderBtn" type="button">Open Downloads Folder</button>
+    </div>
+  </div>
+
+  <div class="state-disconnected" id="stateDisconnected" style="display:none;">
+    <span class="state-icon" aria-hidden="true">🔌</span>
+    <h2 class="state-heading">UniversalDL server not running</h2>
+    <p class="state-description">Make sure the UniversalDL server is running on localhost:5000</p>
+    <ol class="disconnected-steps">
+      <li>Open terminal in UniversalDL folder</li>
+      <li>Run: python run.py</li>
+      <li>Wait for Running on http://0.0.0.0:5000</li>
+    </ol>
+    <div class="state-actions">
+      <button class="btn-start-download" id="checkAgainBtn" type="button">Check Again</button>
+      <button class="btn-analyze" id="configureServerBtn" type="button">Configure Server URL</button>
+    </div>
+  </div>
+
+  <footer class="popup-footer">
+    <a class="footer-link" id="apiKeyNotice" href="#">Pro features require API key</a>
+    <div class="footer-actions">
+      <a class="footer-link" id="settingsLink" href="#">Settings</a>
+      <a class="footer-link" id="openUniversaldlLink" href="#">Open UniversalDL</a>
+    </div>
+    <span class="footer-version">v1.0.0</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

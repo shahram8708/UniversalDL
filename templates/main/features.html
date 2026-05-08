@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}Features — Universal Media Downloader{% endblock %}
+
+{% block extra_css %}
+<style>
+  .feature-hero {
+    background: linear-gradient(140deg, var(--color-hero-gradient-start) 0%, var(--color-hero-gradient-end) 100%);
+    padding: 90px 0 70px;
+    text-align: center;
+  }
+  .feature-hero h1 {
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
+    font-weight: 700;
+  }
+  .feature-hero p {
+    max-width: 720px;
+    margin: 16px auto 0;
+  }
+  .feature-section {
+    padding: 80px 0;
+  }
+  .feature-section:nth-child(even) {
+    background: var(--color-surface-2);
+  }
+  .illustration-box {
+    background: linear-gradient(135deg, var(--color-accent-2-bg), var(--color-accent-bg));
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--color-border);
+    min-height: 240px;
+  }
+  .feature-tags span {
+    display: inline-flex;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    font-size: 0.8rem;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+  .mock-select {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .mock-select .badge {
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+  .code-block {
+    background: var(--color-code-bg);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text);
+    white-space: pre-wrap;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="feature-hero">
+  <div class="container">
+    <h1>Every Feature You Need to Download Smarter</h1>
+    <p class="text-muted-custom">Built for casual users and power users alike. Start simple, grow into advanced features as you need them.</p>
+    <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+      <a class="btn btn-primary" href="/download">Try It Free →</a>
+      <a class="btn btn-outline-primary" href="/pricing">View Pricing →</a>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <div class="code-block">https://youtube.com/watch?v=...\nAnalyzing URL...\nPlatform detected: YouTube\nQualities: 4K, 1080p, 720p, Audio</div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Paste Any URL. We Handle the Rest.</h2>
+        <p class="text-muted-custom">UniversalDL recognizes dozens of URL formats automatically. It detects the platform, content type, and best quality options without requiring any manual selection or API keys.</p>
+        <p class="text-muted-custom">Supported URL examples include YouTube watch, shorts, and playlists, TikTok video links, Instagram posts and reels, and Twitter or X status URLs.</p>
+        <div class="feature-tags">
+          <span>Auto-detect platform</span>
+          <span>200+ platforms</span>
+          <span>Shortened URLs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center flex-lg-row-reverse">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <div class="mock-select">
+            <div class="fw-semibold mb-2">Quality</div>
+            <div class="d-flex flex-wrap">
+              <span class="status-badge status-disabled">8K</span>
+              <span class="status-badge status-disabled">4K</span>
+              <span class="status-badge status-disabled">2K</span>
+              <span class="status-badge status-disabled">1080p</span>
+              <span class="status-badge status-disabled">720p</span>
+              <span class="status-badge status-disabled">Audio</span>
+            </div>
+            <div class="fw-semibold mt-3 mb-2">Formats</div>
+            <div class="d-flex flex-wrap">
+              <span class="status-badge status-disabled">MP4</span>
+              <span class="status-badge status-disabled">MKV</span>
+              <span class="status-badge status-disabled">WebM</span>
+              <span class="status-badge status-disabled">MP3</span>
+              <span class="status-badge status-disabled">FLAC</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Download in the Format You Actually Want</h2>
+        <p class="text-muted-custom">UniversalDL converts and delivers the exact format you need. Server-side FFmpeg processing means your device stays fast and your files stay consistent.</p>
+        <div class="table-responsive mt-3">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Quality</th>
+                <th>Typical size per minute</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>8K</td><td>900 MB to 1.4 GB</td></tr>
+              <tr><td>4K</td><td>200 MB to 450 MB</td></tr>
+              <tr><td>1080p</td><td>60 MB to 120 MB</td></tr>
+              <tr><td>720p</td><td>30 MB to 60 MB</td></tr>
+              <tr><td>Audio only</td><td>4 MB to 10 MB</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-responsive mt-3">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Format</th>
+                <th>Best for</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>MP4</td><td>Compatibility</td><td>Plays everywhere</td></tr>
+              <tr><td>MKV</td><td>Archival</td><td>Multiple tracks</td></tr>
+              <tr><td>WebM</td><td>Efficiency</td><td>Smaller sizes</td></tr>
+              <tr><td>MP3</td><td>Audio</td><td>Portable playback</td></tr>
+              <tr><td>FLAC</td><td>Lossless</td><td>Studio quality</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <div class="code-block">HLS manifest found\nSegment count: 118\nParallel download: enabled\nFFmpeg stitch: complete</div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Handles Adaptive Streams — Not Just Simple Files</h2>
+        <p class="text-muted-custom">Many platforms use HLS or DASH streams with segmented files. UniversalDL parses the manifest, downloads segments in parallel, and stitches them with FFmpeg without quality loss.</p>
+        <p class="text-muted-custom">Platforms like YouTube, Twitch, Vimeo, and Bilibili rely on adaptive streaming. UniversalDL is built to handle those formats reliably.</p>
+        <div class="feature-tags">
+          <span>HLS .m3u8 support</span>
+          <span>DASH .mpd support</span>
+          <span>No quality loss</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center flex-lg-row-reverse">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <div class="code-block">Batch queue\nTotal URLs: 42\nWorkers active: 4\nETA: 18 minutes\nZIP export ready</div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Download 50 URLs While You Sleep</h2>
+        <p class="text-muted-custom">Batch mode processes long lists in parallel. Upload a text file or paste URLs and monitor each item live. Completed files can be exported as ZIP or kept individually.</p>
+        <p class="text-muted-custom">Use cases include full playlists, podcast archives, or image galleries.</p>
+        <div class="feature-tags">
+          <span>Up to 50 URLs (Pro)</span>
+          <span>Parallel processing</span>
+          <span>ZIP export</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <div class="code-block">Subtitles\nLanguage: en, hi, es\nMode: soft embed\nFormats: srt, vtt, ass</div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Download and Embed Subtitles in Any Language</h2>
+        <p class="text-muted-custom">UniversalDL downloads subtitles in 50+ languages and can embed them as a soft track or burn them in. Both auto-generated and manual captions are supported.</p>
+        <div class="feature-tags">
+          <span>50+ languages</span>
+          <span>Soft embed</span>
+          <span>Hard burn-in</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center flex-lg-row-reverse">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <div class="code-block">Subscription monitor\nFrequency: daily\nNew items found: 3\nDownloads queued</div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Set It and Forget It — Auto-Download New Content</h2>
+        <p class="text-muted-custom">Subscribe to channels and feeds. UniversalDL checks for new content on your schedule, deduplicates by known IDs, and downloads only the new items.</p>
+        <p class="text-muted-custom">Supported platforms include YouTube, Twitch, SoundCloud, Spotify podcasts, Reddit, and Bilibili.</p>
+        <div class="feature-tags">
+          <span>Hourly, daily, weekly</span>
+          <span>Email notifications</span>
+          <span>Pro feature</span>
+        </div>
+        <a class="btn btn-primary mt-3" href="/upgrade">Upgrade to Pro for ₹799/month</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <div class="mock-select">
+            <div class="fw-semibold">UniversalDL Extension</div>
+            <div class="text-muted-custom small">Detected: YouTube</div>
+            <div class="d-flex flex-wrap mt-3">
+              <span class="status-badge status-disabled">4K</span>
+              <span class="status-badge status-disabled">1080p</span>
+              <span class="status-badge status-disabled">MP3</span>
+            </div>
+            <button class="btn btn-primary btn-sm mt-3" type="button">Download</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Download Without Leaving the Page</h2>
+        <p class="text-muted-custom">The UniversalDL extension adds a download button directly on supported pages. One click and the download queue opens with your preferred settings.</p>
+        <p class="text-muted-custom">On mobile, the PWA share sheet lets you send URLs directly to UniversalDL.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center flex-lg-row-reverse">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <div class="code-block">curl -X POST https://universaldl.com/api/v1/analyze \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://youtube.com/watch?v=dQw4w9WgXcQ"}'</div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Integrate UniversalDL Into Your Workflow</h2>
+        <p class="text-muted-custom">The REST API lets you automate downloads from your own tools. Analyze URLs, start downloads, and poll status via JSON endpoints.</p>
+        <div class="feature-tags">
+          <span>10,000 calls per month (Pro)</span>
+          <span>Webhook callbacks</span>
+          <span>JSON responses</span>
+        </div>
+        <a class="btn btn-outline-primary mt-3" href="/docs">Read the full API docs</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="illustration-box">
+          <ul class="text-muted-custom mb-0">
+            <li>bcrypt password hashing</li>
+            <li>CSRF protection</li>
+            <li>HTTPS enforced</li>
+            <li>Strict CSP headers</li>
+            <li>ORM based queries only</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2>Your Privacy Is Not an Afterthought</h2>
+        <p class="text-muted-custom">UniversalDL never stores your media files. Anonymous mode avoids URL logging, and we do not run ads or trackers.</p>
+        <p class="text-muted-custom">The platform is built with modern security practices and DRM detection to prevent illegal downloads.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">Comparison Table</h2>
+      <p class="section-subtitle">A deeper look at how UniversalDL stacks up.</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>UniversalDL</th>
+            <th>CLI tools</th>
+            <th>Online sites</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Platform coverage</td><td>200+ platforms</td><td>Varies by extractor</td><td>Limited selection</td></tr>
+          <tr><td>Quality control</td><td>8K and HDR options</td><td>Depends on config</td><td>Often capped</td></tr>
+          <tr><td>Batch downloads</td><td>Built in queue</td><td>Manual scripting</td><td>Rarely supported</td></tr>
+          <tr><td>Privacy</td><td>No ads or trackers</td><td>Local only</td><td>Often ad driven</td></tr>
+          <tr><td>Automation</td><td>REST API + webhooks</td><td>Custom scripts</td><td>Unavailable</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="container text-center">
+    <h2 class="section-title">Ready to try every feature?</h2>
+    <p class="section-subtitle">Paste a URL and start downloading in seconds.</p>
+    <form class="d-flex flex-column flex-md-row gap-2 justify-content-center mt-4" method="GET" action="/download">
+      <input class="form-control form-control-lg url-input-auto" type="url" name="url" placeholder="Paste any URL" required>
+      <button class="btn btn-primary btn-lg" type="submit">Analyze &amp; Download</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

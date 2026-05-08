@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Denied{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center">
+    <div class="display-1 text-accent fw-bold">403</div>
+    <h2 class="mb-3">Access Denied</h2>
+    <p class="text-muted-custom">{{ message }}</p>
+    <div class="d-flex justify-content-center gap-3 mt-4">
+      <a class="btn btn-outline-primary" href="/">Home</a>
+      <a class="btn btn-primary" href="/dashboard">Go to Dashboard</a>
+    </div>
+    <div class="mt-4 text-muted-custom">
+      <i class="bi bi-shield-lock font-size-2rem"></i>
+    </div>
+  </div>
+</div>
+{% endblock %}

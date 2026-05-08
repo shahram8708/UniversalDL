@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% from "components/pagination.html" import render_pagination %}
+
+{% block title %}Blog — UniversalDL{% endblock %}
+
+{% block extra_css %}
+<style>
+  .blog-hero {
+    padding: 70px 0 30px;
+    text-align: center;
+  }
+  .blog-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+  .blog-thumb {
+    background: linear-gradient(135deg, var(--color-surface-2), var(--color-surface-3));
+  }
+  .blog-sidebar {
+    position: sticky;
+    top: 90px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="blog-hero">
+  <div class="container">
+    <h1>UniversalDL Blog</h1>
+    <p class="text-muted-custom">Guides, tutorials, and news about media downloading.</p>
+  </div>
+</section>
+
+<section class="pb-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-9">
+        <form class="mb-4" method="GET" action="/blog">
+          <div class="input-group input-group-lg">
+            <input id="blog-search" name="q" type="text" class="form-control" placeholder="Search articles" value="{{ search_query }}">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </div>
+        </form>
+        <div class="btn-group flex-wrap mb-4" role="group">
+          <a class="btn btn-outline-primary {% if not current_category %}active{% endif %}" href="/blog">All</a>
+          {% for cat in categories %}
+            <a class="btn btn-outline-primary {% if current_category == cat %}active{% endif %}" href="/blog?category={{ cat }}">{{ cat }}</a>
+          {% endfor %}
+        </div>
+
+        {% if search_query %}
+          <div class="mb-4">
+            <h5>Search results for "{{ search_query }}"</h5>
+            <a href="/blog" class="text-accent">Clear search</a>
+          </div>
+        {% endif %}
+
+        <div class="row g-4">
+          {% if not posts %}
+            <div class="col-12">
+              <div class="empty-state">
+                <span class="empty-state-icon">📝</span>
+                No articles found. Check back soon!
+              </div>
+            </div>
+          {% else %}
+            {% for post in posts %}
+              <div class="col-md-6 col-lg-4">
+                <div class="card h-100 blog-card">
+                  <div class="ratio ratio-16x9 blog-thumb">
+                    {% if post.thumbnail_url %}
+                      <img src="{{ post.thumbnail_url }}" alt="{{ post.title }}" class="img-fluid rounded-top">
+                    {% else %}
+                      <div class="w-100 h-100"></div>
+                    {% endif %}
+                  </div>
+                  <div class="card-body">
+                    <span class="status-badge status-disabled mb-2">{{ post.category }}</span>
+                    <h5 class="card-title"><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h5>
+                    <p class="text-muted-custom">{{ post.excerpt[:120] }}{% if post.excerpt and post.excerpt|length > 120 %}...{% endif %}</p>
+                    <div class="small text-muted-custom">By {{ post.author }} · {{ post.published_at | relative_time }}</div>
+                    <a href="/blog/{{ post.slug }}" class="text-accent d-inline-block mt-2">Read More →</a>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div class="mt-4">
+          {{ render_pagination(pagination, 'main.blog_index', params={'category': current_category, 'q': search_query}) }}
+        </div>
+      </div>
+
+      <div class="col-lg-3">
+        <div class="blog-sidebar">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6>Popular Articles</h6>
+              <ul class="list-unstyled mb-0">
+                {% for post in popular_posts %}
+                  <li class="mb-2"><a href="/blog/{{ post.slug }}">{{ post.title }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h6>Categories</h6>
+              <ul class="list-group list-group-flush">
+                {% for cat in categories %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="/blog?category={{ cat }}">{{ cat }}</a>
+                    <span class="status-badge status-disabled">{{ category_counts.get(cat, 0) }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

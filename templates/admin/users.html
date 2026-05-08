@@ -1,0 +1,165 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/pagination.html" import render_pagination %}
+
+{% block admin_title %}User Management{% endblock %}
+
+{% block admin_content %}
+  <div class="card p-3 mb-3">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-12 col-md-4">
+        {{ form.search.label(class="form-label") }}
+        {{ form.search(class="form-control", placeholder="Search by email or name") }}
+      </div>
+      <div class="col-6 col-md-2">
+        {{ form.plan_filter.label(class="form-label") }}
+        {{ form.plan_filter(class="form-select") }}
+      </div>
+      <div class="col-6 col-md-2">
+        {{ form.status_filter.label(class="form-label") }}
+        {{ form.status_filter(class="form-select") }}
+      </div>
+      <div class="col-6 col-md-2">
+        {{ form.date_from.label(class="form-label") }}
+        {{ form.date_from(class="form-control", type="date") }}
+      </div>
+      <div class="col-6 col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+        <a class="btn btn-outline-secondary w-100" href="{{ url_for('admin.admin_users') }}">Clear</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="d-flex flex-wrap gap-3 mb-3">
+    <div class="small text-muted-custom">Total: {{ total_users }}</div>
+    <div class="small text-muted-custom">Pro: {{ pro_users }}</div>
+    <div class="small text-muted-custom">Free: {{ total_users - pro_users }}</div>
+    <div class="small text-muted-custom">Suspended: {{ suspended_users }}</div>
+  </div>
+
+  <div class="card p-3">
+    <div class="table-responsive">
+      <table class="table admin-table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Plan</th>
+            <th>Join Date</th>
+            <th>Downloads</th>
+            <th>Last Active</th>
+            <th class="action-col text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="admin-avatar admin-avatar-accent">
+                    {{ user.email[:1] | upper }}
+                  </div>
+                  <div>
+                    <div class="fw-semibold">{{ user.email }}</div>
+                    <div class="small text-muted-custom">{{ user.display_name or '—' }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                {% if user.is_suspended %}
+                  <span class="status-badge status-down">Suspended</span>
+                {% elif user.plan == 'enterprise' %}
+                  <span class="status-badge status-info">Enterprise</span>
+                {% elif user.plan == 'pro' and user.is_pro() %}
+                  <span class="status-badge status-active">Pro</span>
+                {% else %}
+                  <span class="status-badge status-disabled">Free</span>
+                {% endif %}
+                {% if user.is_admin %}
+                  <span class="status-badge status-degraded ms-1">Admin</span>
+                {% endif %}
+              </td>
+              <td>
+                <span title="{{ user.created_at }}">{{ user.created_at | timeago }}</span>
+              </td>
+              <td>{{ user.download_count }}</td>
+              <td>
+                {{ user.last_active_at | timeago if user.last_active_at else 'Never' }}
+              </td>
+              <td class="text-end">
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">Actions</button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button class="dropdown-item view-profile-btn" data-user-id="{{ user.id }}">View Profile</button>
+                    </li>
+                    <li>
+                      <button class="dropdown-item admin-user-action" data-action="grant-pro" data-user-id="{{ user.id }}">Grant Pro (1 year)</button>
+                    </li>
+                    <li>
+                      <button class="dropdown-item grant-pro-custom-btn" data-user-id="{{ user.id }}">Grant Pro (Custom)</button>
+                    </li>
+                    {% if user.plan in ['pro', 'enterprise'] %}
+                      <li>
+                        <button class="dropdown-item admin-user-action" data-action="revoke-pro" data-user-id="{{ user.id }}">Revoke Pro</button>
+                      </li>
+                    {% endif %}
+                    <li><hr class="dropdown-divider"></li>
+                    {% if user.is_suspended %}
+                      <li>
+                        <button class="dropdown-item admin-user-action" data-action="unsuspend" data-user-id="{{ user.id }}">Unsuspend</button>
+                      </li>
+                    {% else %}
+                      <li>
+                        <button class="dropdown-item admin-user-action" data-action="suspend" data-user-id="{{ user.id }}">Suspend</button>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center text-muted-custom">No users found</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    {{ render_pagination(pagination, 'admin.admin_users', params={'search': request.args.get('search', ''), 'plan_filter': request.args.get('plan_filter', ''), 'status_filter': request.args.get('status_filter', ''), 'date_from': request.args.get('date_from', '')}) }}
+  </div>
+
+  <div class="modal fade" id="userProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">User Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-muted-custom">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="grantProModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Grant Pro Access</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">Duration in days</label>
+          <input type="number" class="form-control" id="grant-pro-duration" min="1" value="365">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="grant-pro-confirm">Grant Pro</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

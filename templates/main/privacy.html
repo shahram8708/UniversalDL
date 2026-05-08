@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy — UniversalDL{% endblock %}
+
+{% block extra_css %}
+<style>
+  .legal-layout {
+    padding: 70px 0;
+  }
+  .legal-sidebar {
+    position: sticky;
+    top: 90px;
+  }
+  .legal-section {
+    margin-bottom: 48px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="legal-layout">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">
+        <div class="legal-sidebar">
+          <h5>Privacy Policy</h5>
+          <div class="text-muted-custom small">Last updated: January 15, 2026</div>
+          <nav class="nav flex-column mt-3">
+            <a class="nav-link" href="#intro">1. Introduction and Scope</a>
+            <a class="nav-link" href="#collect">2. Information We Collect</a>
+            <a class="nav-link" href="#use">3. How We Use Information</a>
+            <a class="nav-link" href="#not">4. Information We Do Not Collect</a>
+            <a class="nav-link" href="#sharing">5. Data Sharing</a>
+            <a class="nav-link" href="#retention">6. Data Retention</a>
+            <a class="nav-link" href="#rights">7. Your Rights</a>
+            <a class="nav-link" href="#security">8. Security Measures</a>
+            <a class="nav-link" href="#cookies">9. Cookies</a>
+            <a class="nav-link" href="#children">10. Children&#39;s Privacy</a>
+            <a class="nav-link" href="#changes">11. Changes to This Policy</a>
+            <a class="nav-link" href="#contact">12. Contact</a>
+          </nav>
+        </div>
+      </div>
+      <div class="col-lg-9">
+        <div class="text-muted-custom small mb-4">Last updated: January 15, 2026</div>
+
+        <section class="legal-section" id="intro">
+          <h2>1. Introduction and Scope</h2>
+          <p class="text-muted-custom">This Privacy Policy describes how UniversalDL collects, uses, and protects information when you use our service.</p>
+        </section>
+
+        <section class="legal-section" id="collect">
+          <h2>2. Information We Collect</h2>
+          <ul class="text-muted-custom">
+            <li>Account information such as email, display name, and hashed password.</li>
+            <li>Download metadata such as title, platform, and quality. URLs are not stored in anonymous mode.</li>
+            <li>Usage data including API calls and download counts.</li>
+            <li>Authentication tokens stored in session cookies.</li>
+            <li>Log data including IP addresses, hashed after 30 days.</li>
+          </ul>
+        </section>
+
+        <section class="legal-section" id="use">
+          <h2>3. How We Use Information</h2>
+          <ul class="text-muted-custom">
+            <li>Provide and improve the service.</li>
+            <li>Send email notifications when enabled.</li>
+            <li>Detect abuse and enforce rate limits.</li>
+            <li>We do not sell user data.</li>
+          </ul>
+        </section>
+
+        <section class="legal-section" id="not">
+          <h2>4. Information We Do Not Collect</h2>
+          <ul class="text-muted-custom">
+            <li>We do not store downloaded media files.</li>
+            <li>We do not track browsing outside UniversalDL.</li>
+            <li>We do not serve ads or allow advertisers access to your data.</li>
+            <li>Anonymous mode prevents URL storage.</li>
+          </ul>
+        </section>
+
+        <section class="legal-section" id="sharing">
+          <h2>5. Data Sharing</h2>
+          <p class="text-muted-custom">We share data only with the following providers to operate the service:</p>
+          <ul class="text-muted-custom">
+            <li>Razorpay for payment processing, PCI DSS compliant.</li>
+            <li>Sentry for error monitoring, anonymized.</li>
+          </ul>
+          <p class="text-muted-custom">No other third party data sharing occurs.</p>
+        </section>
+
+        <section class="legal-section" id="retention">
+          <h2>6. Data Retention</h2>
+          <ul class="text-muted-custom">
+            <li>Download history: 7 days for Free, forever for Pro.</li>
+            <li>IP addresses: hashed after 30 days, deleted after 90 days.</li>
+            <li>URLs: nullified after 90 days, immediate in anonymous mode.</li>
+            <li>Account data retained until deletion request.</li>
+          </ul>
+        </section>
+
+        <section class="legal-section" id="rights">
+          <h2>7. Your Rights</h2>
+          <p class="text-muted-custom">You can access, correct, delete, or export your data from Settings. EU users have GDPR rights including portability and deletion.</p>
+        </section>
+
+        <section class="legal-section" id="security">
+          <h2>8. Security Measures</h2>
+          <ul class="text-muted-custom">
+            <li>HTTPS enforcement and HSTS headers.</li>
+            <li>bcrypt password hashing.</li>
+            <li>CSRF protection on forms.</li>
+            <li>Rate limiting and abuse detection.</li>
+          </ul>
+        </section>
+
+        <section class="legal-section" id="cookies">
+          <h2>9. Cookies</h2>
+          <ul class="text-muted-custom">
+            <li>Session cookie for authentication.</li>
+            <li>Theme preference stored in localStorage, not a cookie.</li>
+            <li>No advertising cookies.</li>
+            <li>No analytics cookies by default. Plausible is supported if configured.</li>
+          </ul>
+        </section>
+
+        <section class="legal-section" id="children">
+          <h2>10. Children&#39;s Privacy</h2>
+          <p class="text-muted-custom">UniversalDL is not directed to children under 13 and does not knowingly collect data from minors.</p>
+        </section>
+
+        <section class="legal-section" id="changes">
+          <h2>11. Changes to This Policy</h2>
+          <p class="text-muted-custom">We may update this policy periodically. Continued use of the service indicates acceptance of changes.</p>
+        </section>
+
+        <section class="legal-section" id="contact">
+          <h2>12. Contact</h2>
+          <p class="text-muted-custom">For privacy inquiries, contact privacy@universaldl.com.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

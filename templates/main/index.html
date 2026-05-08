@@ -1,0 +1,898 @@
+{% extends "base.html" %}
+
+{% block title %}Download Anything From Anywhere — Free & No Ads{% endblock %}
+{% block meta_desc %}UniversalDL — the only universal media downloader. Download from YouTube, TikTok, Instagram,
+Twitter, Reddit, Twitch and 200+ platforms. No APIs, no ads, no registration required.{% endblock %}
+
+{% block extra_css %}
+<style>
+  .hero-surface {
+    background: radial-gradient(circle at 20% 20%, var(--color-hero-glow), transparent 35%),
+      linear-gradient(120deg, var(--color-hero-gradient-start) 0%, var(--color-hero-gradient-end) 100%);
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    padding: 96px 0 64px;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    font-size: 0.85rem;
+    letter-spacing: 0.2px;
+    background: var(--color-accent-bg);
+  }
+
+  .hero-title {
+    font-size: clamp(2.6rem, 4vw, 4.2rem);
+    font-weight: 700;
+  }
+
+  .hero-title span {
+    font-weight: 300;
+    display: block;
+  }
+
+  .hero-input .form-control {
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+    padding: 1rem 1.2rem;
+  }
+
+  .hero-input .btn {
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+  }
+
+  .trust-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .platform-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    font-size: 0.85rem;
+  }
+
+  .demo-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 360px;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .demo-step {
+    opacity: 0;
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 60px;
+  }
+
+  .demo-step.active {
+    animation-duration: 16s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+
+  .demo-step.active.step-1 {
+    animation-name: demoStep1;
+  }
+
+  .demo-step.active.step-2 {
+    animation-name: demoStep2;
+  }
+
+  .demo-step.active.step-3 {
+    animation-name: demoStep3;
+  }
+
+  .demo-step.active.step-4 {
+    animation-name: demoStep4;
+  }
+
+  @keyframes demoStep1 {
+    0%, 5% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    10%, 22% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    27% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes demoStep2 {
+    0%, 25% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    30%, 47% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    52% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes demoStep3 {
+    0%, 50% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    55%, 72% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    77% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes demoStep4 {
+    0%, 75% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    80%, 97% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  .stats-bar {
+    background: var(--color-surface-2);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .stats-bar.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .stats-item {
+    text-align: center;
+    padding: 20px 10px;
+    font-weight: 600;
+  }
+
+  .stats-item span {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  .step-card {
+    background: var(--color-surface);
+    border-radius: 18px;
+    padding: 28px;
+    border: 1px solid var(--color-border);
+    height: 100%;
+    position: relative;
+  }
+
+  .step-number {
+    font-size: 3rem;
+    font-weight: 700;
+    position: absolute;
+    top: 10px;
+    right: 18px;
+  }
+
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .platform-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 16px;
+    border-radius: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .platform-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .feature-card {
+    background: var(--color-surface);
+    border-radius: 16px;
+    border: 1px solid var(--color-border);
+    padding: 24px;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent-bg);
+    color: var(--color-accent);
+    margin-bottom: 16px;
+  }
+
+  .testimonial-card {
+    background: var(--color-surface);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--color-border);
+    position: relative;
+  }
+
+  .testimonial-card::before {
+    content: "“";
+    position: absolute;
+    top: -10px;
+    left: 18px;
+    font-size: 56px;
+    color: var(--color-accent);
+    opacity: 0.25;
+  }
+
+  .pricing-card {
+    border-radius: 18px;
+    border: 1px solid var(--color-border);
+    padding: 28px;
+    height: 100%;
+    background: var(--color-surface);
+  }
+
+  .pricing-featured {
+    border: 2px solid var(--color-accent);
+    position: relative;
+  }
+
+  .pricing-ribbon {
+    position: absolute;
+    top: 18px;
+    right: -8px;
+    background: var(--color-accent);
+    color: var(--color-text-on-accent);
+    padding: 4px 14px;
+    font-size: 0.75rem;
+    border-radius: 999px;
+  }
+
+  .cta-surface {
+    background: linear-gradient(120deg, var(--color-surface-2) 0%, var(--color-surface) 100%);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .demo-terminal {
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text);
+  }
+
+  .quality-badge {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--color-accent-2-bg);
+    color: var(--color-accent-2);
+    font-size: 0.75rem;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  .stat-divider {
+    width: 1px;
+    background: var(--color-border);
+    height: 42px;
+    align-self: center;
+  }
+
+  @media (max-width: 992px) {
+    .demo-card {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-surface">
+  <div class="container mw-1200">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="hero-pill mb-3">🌐 200+ Platforms Supported</div>
+        <h1 class="hero-title">Download Anything.<span>From Anywhere.</span></h1>
+        <p class="lead text-muted-custom mt-3">The only universal media downloader that works without APIs, without
+          registration, and without ads. Paste any URL and get your file in seconds.</p>
+        <form class="hero-input mt-4" method="GET" action="/download">
+          <div class="input-group input-group-lg">
+            <input id="hero-url-input" name="url" type="url" class="form-control url-input-auto"
+              placeholder="Paste any URL — YouTube, TikTok, Instagram, Reddit..." required>
+            <button class="btn btn-primary px-4" type="submit">Analyze &amp; Download</button>
+          </div>
+        </form>
+        <div class="trust-row mt-4">
+          <span>✅ No account required</span>
+          <span>✅ No ads — ever</span>
+          <span>✅ No malware</span>
+          <span>✅ Files to your device</span>
+          <span>✅ Privacy first</span>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          {% for platform in platform_list[:12] %}
+          <span class="platform-pill">{{ platform.display_name }}</span>
+          {% endfor %}
+          {% if (platform_list|length) > 12 %}
+          <span class="platform-pill">+ {{ (platform_list|length) - 12 }} more</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="demo-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="text-muted-custom small">UniversalDL Live Demo</div>
+            <div class="status-badge status-active">Online</div>
+          </div>
+          <div class="demo-step active step-1">
+            <div class="demo-terminal">https://youtube.com/watch?v=...</div>
+            <div class="mt-3 text-muted-custom">Detecting platform...</div>
+          </div>
+          <div class="demo-step active step-2">
+            <div class="demo-terminal">Platform detected: YouTube</div>
+            <div class="mt-3">
+              <span class="quality-badge">4K</span>
+              <span class="quality-badge">1080p</span>
+              <span class="quality-badge">720p</span>
+              <span class="quality-badge">Audio</span>
+            </div>
+          </div>
+          <div class="demo-step active step-3">
+            <div class="text-muted-custom mb-2">Downloading...</div>
+            <div class="progress progress-h-10">
+              <div class="progress-bar progress-tone-success w-100"></div>
+            </div>
+            <div class="small text-muted-custom mt-2">100% Complete</div>
+          </div>
+          <div class="demo-step active step-4">
+            <div class="text-success fw-semibold">✓ Download Complete</div>
+            <div class="text-muted-custom mt-2">Saved to your device</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-bar animate-on-scroll" id="stats-bar">
+  <div class="container">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <div class="stats-item">{{ (total_downloads_all_time or 128000) | format_number }}+<span>Files Downloaded</span>
+      </div>
+      <div class="stat-divider d-none d-md-block"></div>
+      <div class="stats-item">{{ total_platform_count or 200 }}+<span>Platforms Supported</span></div>
+      <div class="stat-divider d-none d-md-block"></div>
+      <div class="stats-item">{{ (active_users_estimate or 12000) | format_number }}+<span>Active Users</span></div>
+      <div class="stat-divider d-none d-md-block"></div>
+      <div class="stats-item">99.9%<span>Uptime Guarantee</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Download in 3 Simple Steps</h2>
+      <p class="section-subtitle">No software to install. No account needed. No ads to click through.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <div class="feature-icon"><i class="bi bi-link-45deg"></i></div>
+          <h3>Paste Any URL</h3>
+          <p class="text-muted-custom">Copy a URL from YouTube, TikTok, Instagram, Twitter, Reddit, or any of our 200+
+            supported platforms and paste it into UniversalDL.</p>
+          <div class="text-muted-custom small">youtube.com/watch?v=... | tiktok.com/@user/video/...</div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <div class="feature-icon"><i class="bi bi-sliders"></i></div>
+          <h3>Choose Your Format</h3>
+          <p class="text-muted-custom">Select the video quality, output format, and subtitle preferences. Pro users
+            unlock up to 8K quality.</p>
+          <div>
+            <span class="quality-badge">8K</span>
+            <span class="quality-badge">4K</span>
+            <span class="quality-badge">1080p</span>
+            <span class="quality-badge">720p</span>
+            <span class="quality-badge">480p</span>
+            <span class="quality-badge">Audio Only</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <div class="feature-icon"><i class="bi bi-download"></i></div>
+          <h3>Instant Download</h3>
+          <p class="text-muted-custom">Your file downloads directly to your device. No cloud storage, no waiting, no
+            expiry.</p>
+          <div class="text-muted-custom small">Files are never stored on our servers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-surface-2">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">200+ Platforms. One Tool.</h2>
+      <p class="section-subtitle">We support every major platform and hundreds of smaller ones.</p>
+    </div>
+    <div class="row g-3 align-items-center mb-4">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" class="form-control" id="platform-search-input" placeholder="Search platforms...">
+        </div>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <div class="btn-group" role="group" aria-label="Platform categories">
+          <button type="button" class="btn btn-outline-primary active" data-category="all">All</button>
+          <button type="button" class="btn btn-outline-primary" data-category="video">Video</button>
+          <button type="button" class="btn btn-outline-primary" data-category="audio">Audio</button>
+          <button type="button" class="btn btn-outline-primary" data-category="social">Social</button>
+          <button type="button" class="btn btn-outline-primary" data-category="image">Image</button>
+          <button type="button" class="btn btn-outline-primary" data-category="other">Other</button>
+        </div>
+      </div>
+    </div>
+    <div class="platform-grid">
+      {% for platform in platform_list %}
+      <div class="platform-grid-item platform-card" data-name="{{ platform.platform_id }}"
+        data-category="{{ platform.category }}">
+        <div class="fw-semibold">{{ platform.display_name }}</div>
+        <div class="text-muted-custom small">{{ platform.category|capitalize }}</div>
+        <span class="status-badge status-{{ platform.status_label }} mt-2 d-inline-block">{{
+          platform.status_label|capitalize }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="/platforms" class="text-accent">View all {{ total_platform_count or 200 }} platforms →</a>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">Everything You Need. Nothing You Don&#39;t.</h2>
+      <p class="section-subtitle">Built for archivists, creators, researchers, and everyday users.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-globe2"></i></div>
+          <h4>Any Platform, Any URL</h4>
+          <p class="text-muted-custom">Paste any URL and our system automatically detects the platform, content type,
+            and available quality options.</p>
+          <div class="text-muted-custom small">YouTube, TikTok, Instagram, Twitter, Reddit, Twitch, Vimeo, SoundCloud,
+            and 200+ more</div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-file-earmark-play"></i></div>
+          <h4>Any Format, Any Quality</h4>
+          <p class="text-muted-custom">Download in MP4, MKV, WebM, MP3, FLAC, M4A, or WAV with server side conversion.
+          </p>
+          <div>
+            <span class="quality-badge">8K</span>
+            <span class="quality-badge">4K</span>
+            <span class="quality-badge">2K</span>
+            <span class="quality-badge">1080p</span>
+            <span class="quality-badge">720p</span>
+            <span class="quality-badge">Audio</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+          <h4>100% API Free</h4>
+          <p class="text-muted-custom">Every extraction uses direct network techniques so we never break due to API
+            deprecations or access requirements.</p>
+          <span class="status-badge status-active-subtle text-success">Never breaks from API changes</span>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-stack"></i></div>
+          <h4>Batch Download Queues</h4>
+          <p class="text-muted-custom">Upload a file or paste 50+ URLs at once. Celery powered queues process in
+            parallel with live progress tracking.</p>
+          <div class="text-muted-custom small">Up to 50 URLs per batch for Pro users</div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-bell-fill"></i></div>
+          <h4>Auto Download Subscriptions</h4>
+          <p class="text-muted-custom">Subscribe to channels, podcasts, and feeds. UniversalDL checks for new content on
+            your schedule.</p>
+          <div class="text-muted-custom small">Hourly, daily, or weekly checks · Email notifications · Pro feature</div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-browser-chrome"></i></div>
+          <h4>1 Click Browser Extension</h4>
+          <p class="text-muted-custom">Install the UniversalDL extension for Chrome or Firefox to download instantly
+            from any supported page.</p>
+          <div class="d-flex gap-2">
+            <span class="status-badge status-disabled">Chrome</span>
+            <span class="status-badge status-disabled">Firefox</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-surface-2">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">How We Compare</h2>
+      <p class="section-subtitle">See why UniversalDL is the superior choice for media downloading.</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="comparison-highlight">UniversalDL</th>
+            <th>yt-dlp</th>
+            <th>SaveFrom</th>
+            <th>Browser Extensions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Platform Coverage</td>
+            <td class="fw-semibold">200+ ✅</td>
+            <td>1000+ ✅</td>
+            <td>YouTube mainly ⚠️</td>
+            <td>1-3 ❌</td>
+          </tr>
+          <tr>
+            <td>GUI Available</td>
+            <td class="fw-semibold">✅ Web + PWA</td>
+            <td>❌ CLI only</td>
+            <td>✅ Web</td>
+            <td>✅ Extension</td>
+          </tr>
+          <tr>
+            <td>Mobile App (PWA)</td>
+            <td class="fw-semibold">✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>Partial ⚠️</td>
+          </tr>
+          <tr>
+            <td>Batch Downloads</td>
+            <td class="fw-semibold">✅ Unlimited (Pro)</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td>Format Conversion</td>
+            <td class="fw-semibold">✅ Server side</td>
+            <td>✅ Local</td>
+            <td>❌</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td>Subtitle Download</td>
+            <td class="fw-semibold">✅ + embed</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td>Metadata Injection</td>
+            <td class="fw-semibold">✅</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td>Channel Monitor</td>
+            <td class="fw-semibold">✅ Pro</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td>REST API</td>
+            <td class="fw-semibold">✅ Pro</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td>Malware Free</td>
+            <td class="fw-semibold">✅</td>
+            <td>✅</td>
+            <td>❌ Ads and malware</td>
+            <td>⚠️ Varies</td>
+          </tr>
+          <tr>
+            <td>No Registration Needed</td>
+            <td class="fw-semibold">✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">Trusted by Creators, Archivists &amp; Researchers</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="testimonial-card">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="avatar-token avatar-token-accent">S</div>
+            <div>
+              <div class="fw-semibold">Sarah K.</div>
+              <div class="text-muted-custom small">Investigative Journalist</div>
+            </div>
+          </div>
+          <p class="text-muted-custom">"I archive social media content for investigative journalism. UniversalDL is the
+            only tool that works reliably across Twitter, Instagram, and Facebook simultaneously. The anonymous mode is
+            essential for my work."</p>
+          <div>⭐⭐⭐⭐⭐</div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="testimonial-card">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="avatar-token avatar-token-success">R</div>
+            <div>
+              <div class="fw-semibold">Rajan M.</div>
+              <div class="text-muted-custom small">PhD Researcher</div>
+            </div>
+          </div>
+          <p class="text-muted-custom">"As a PhD student in rural India, I download lecture series during my 2 hour
+            window of reliable Wi-Fi every week. UniversalDL handles Coursera, YouTube, and even university portals
+            without any fuss."</p>
+          <div>⭐⭐⭐⭐⭐</div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="testimonial-card">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="avatar-token avatar-token-muted">P</div>
+            <div>
+              <div class="fw-semibold">Priya L.</div>
+              <div class="text-muted-custom small">Language Educator</div>
+            </div>
+          </div>
+          <p class="text-muted-custom">"I batch-download entire YouTube playlists with subtitles for my language
+            learning students. The subtitle embedding feature alone makes this worth the Pro subscription. Brilliant
+            tool."</p>
+          <div>⭐⭐⭐⭐⭐</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-surface-2">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">Simple, Honest Pricing</h2>
+      <p class="section-subtitle">The free plan is genuinely useful — upgrade only when you need more.</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-5">
+        <div class="pricing-card">
+          <span class="status-badge status-disabled">Free Forever</span>
+          <h3 class="display-6 mt-3">₹0 <small class="text-muted-custom">/ month</small></h3>
+          <ul class="list-unstyled text-muted-custom mt-3">
+            <li>✅ Up to 1080p quality</li>
+            <li>✅ 2 concurrent downloads</li>
+            <li>✅ 5 URLs per batch</li>
+            <li>✅ 7 day download history</li>
+            <li>✅ Browser extension</li>
+            <li>✅ No ads, ever</li>
+            <li>✅ No registration required</li>
+          </ul>
+          <a href="/download" class="btn btn-outline-primary w-100 mt-3">Start Downloading Free</a>
+          <div class="text-muted-custom small mt-2">No credit card. No trial period. Just free.</div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="pricing-card pricing-featured">
+          <div class="pricing-ribbon">Most Popular</div>
+          <span class="status-badge status-down">Pro</span>
+          <h3 class="display-6 mt-3">₹799 <small class="text-muted-custom">/ month</small></h3>
+          <div class="text-muted-custom">or ₹6,399/year (save ₹2,189)</div>
+          <ul class="list-unstyled text-muted-custom mt-3">
+            <li>✅ 8K / HDR quality</li>
+            <li>✅ 10 concurrent downloads</li>
+            <li>✅ Unlimited batch downloads</li>
+            <li>✅ Channel subscriptions (20 channels)</li>
+            <li>✅ Download history forever</li>
+            <li>✅ REST API access (10,000 calls/month)</li>
+            <li>✅ Priority queue</li>
+            <li>✅ Webhook callbacks</li>
+            <li>✅ Email support</li>
+          </ul>
+          <a href="/upgrade" class="btn btn-primary w-100 mt-3">Upgrade to Pro</a>
+          <div class="text-muted-custom small mt-2">Cancel anytime. No hidden fees.</div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <a href="/pricing" class="text-accent">See full pricing &amp; feature comparison →</a>
+    </div>
+  </div>
+</section>
+
+{% if recent_blog_posts %}
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="section-title">From the UniversalDL Blog</h2>
+        <p class="section-subtitle">Guides, tutorials, and news about media downloading.</p>
+      </div>
+      <a href="/blog" class="text-accent">View all articles →</a>
+    </div>
+    <div class="row g-4">
+      {% for post in recent_blog_posts %}
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="ratio ratio-16x9 bg-surface-2">
+            {% if post.thumbnail_url %}
+            <img src="{{ post.thumbnail_url }}" alt="{{ post.title }}" class="img-fluid rounded-top">
+            {% else %}
+            <div class="w-100 h-100 placeholder-gradient"></div>
+            {% endif %}
+          </div>
+          <div class="card-body">
+            <span class="status-badge status-disabled mb-2">{{ post.category }}</span>
+            <h5><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h5>
+            <p class="text-muted-custom">{{ post.excerpt[:120] }}{% if post.excerpt and post.excerpt|length > 120
+              %}...{% endif %}</p>
+            <div class="small text-muted-custom">By {{ post.author }} · {{ post.published_at | relative_time }}</div>
+            <a href="/blog/{{ post.slug }}" class="text-accent d-inline-block mt-2">Read More →</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="cta-surface py-5">
+  <div class="container text-center">
+    <h2 class="section-title">Ready to Download Anything?</h2>
+    <p class="section-subtitle">Join thousands of creators, archivists, and researchers.</p>
+    <form class="hero-input mt-4" method="GET" action="/download">
+      <div class="input-group input-group-lg justify-content-center">
+        <input name="url" type="url" class="form-control url-input-auto" placeholder="Paste any URL to start..."
+          required>
+        <button class="btn btn-primary px-4" type="submit">Analyze &amp; Download</button>
+      </div>
+    </form>
+    <div class="text-muted-custom my-3">Or</div>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="/auth/register" class="btn btn-outline-primary">Create Free Account →</a>
+      <a href="/platforms" class="btn btn-outline-secondary">Browse Supported Platforms →</a>
+    </div>
+    <div class="text-muted-custom small mt-3">🔒 No login required to start. No ads. No malware. Your files go directly
+      to your device.</div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+  (function () {
+    var target = document.getElementById("stats-bar");
+    if (!target || !("IntersectionObserver" in window)) {
+      if (target) {
+        target.classList.add("visible");
+      }
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.2 });
+    observer.observe(target);
+  })();
+</script>
+{% endblock %}

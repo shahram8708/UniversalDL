@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline | UniversalDL</title>
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("udl-theme") || "light";
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      --offline-bg: #F8FAFC;
+      --offline-surface: #FFFFFF;
+      --offline-text: #0F172A;
+      --offline-text-muted: #475569;
+      --offline-border: #E2E8F0;
+      --offline-accent: #E94560;
+      --offline-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    }
+    :root[data-theme="dark"] {
+      --offline-bg: #0F172A;
+      --offline-surface: #1E293B;
+      --offline-text: #F1F5F9;
+      --offline-text-muted: #94A3B8;
+      --offline-border: #334155;
+      --offline-accent: #E94560;
+      --offline-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--offline-bg);
+      color: var(--offline-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 24px;
+    }
+    .offline-card {
+      max-width: 640px;
+      background-color: var(--offline-surface);
+      border: 1px solid var(--offline-border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: var(--offline-shadow);
+      text-align: center;
+    }
+    .icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 30px;
+      color: var(--offline-accent);
+    }
+    p {
+      margin: 0 0 16px;
+      line-height: 1.6;
+      color: var(--offline-text-muted);
+    }
+    .section {
+      text-align: left;
+      margin: 22px 0;
+      padding: 16px;
+      background-color: var(--offline-bg);
+      border-radius: 12px;
+      border: 1px solid var(--offline-border);
+    }
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--offline-text);
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--offline-text-muted);
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 16px;
+      background-color: var(--offline-accent);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-card">
+    <div class="icon">📶</div>
+    <h1>You&#39;re Offline</h1>
+    <p>No internet connection. UniversalDL requires internet to analyze and download content.</p>
+
+    <div class="section">
+      <h2>What you can still do</h2>
+      <ul>
+        <li>Browse your cached pages</li>
+        <li>View download history if previously cached</li>
+        <li>Read documentation if previously viewed</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>When you&#39;re back online</h2>
+      <ul>
+        <li>Your queued downloads will resume automatically</li>
+        <li>The page will reload automatically when connection is restored</li>
+      </ul>
+    </div>
+
+    <button class="btn" type="button" onclick="window.location.reload()">Try Again</button>
+  </div>
+
+  <script>
+    window.addEventListener("online", () => window.location.reload());
+  </script>
+</body>
+</html>

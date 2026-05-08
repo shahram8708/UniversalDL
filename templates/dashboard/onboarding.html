@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+
+{% block title %}Getting Started{% endblock %}
+
+{% block navbar %}
+<nav class="navbar onboarding-navbar">
+  <div class="container d-flex justify-content-between">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <span class="brand-icon"><i class="bi bi-play-fill"></i></span>
+      <span>UniversalDL</span>
+    </a>
+    <a class="text-muted-custom" href="/onboarding/skip">Skip Setup</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 mw-720">
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="fw-semibold">Step {{ step }} of 3</div>
+      <a class="small text-muted-custom" href="/onboarding/skip">Skip Setup</a>
+    </div>
+    <div class="d-flex align-items-center justify-content-between">
+      {% set steps = [1, 2, 3] %}
+      {% for s in steps %}
+        {% set completed = s < step %}
+        {% set current = s == step %}
+        <div class="text-center onboarding-step">
+          <div class="mx-auto onboarding-step-dot {% if completed %}is-complete{% elif current %}is-current{% endif %}">
+            {% if completed %}
+              <i class="bi bi-check"></i>
+            {% else %}
+              {{ s }}
+            {% endif %}
+          </div>
+          <div class="small text-muted-custom mt-2">
+            {% if s == 1 %}Download Preferences{% endif %}
+            {% if s == 2 %}Notifications and Privacy{% endif %}
+            {% if s == 3 %}Install Extensions{% endif %}
+          </div>
+        </div>
+        {% if not loop.last %}
+          <div class="flex-grow-1 onboarding-step-line"></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if step == 1 %}
+    <form method="post" action="/onboarding/step/1">
+      {{ form.hidden_tag() }}
+      <h2 class="h4 mb-2">Choose Your Default Download Settings</h2>
+      <p class="text-muted">These can be changed anytime in Settings. Pick what feels right.</p>
+
+      <div class="mt-4">
+        <h5 class="fw-semibold">Preferred Output Format</h5>
+        <div class="row g-3 mt-1">
+          <div class="col-12 col-md-6">
+            <label class="card option-card" data-radio-name="default_format" data-radio-value="mp4">
+              <input class="form-check-input d-none" type="radio" name="default_format" value="mp4" {% if form.default_format.data == 'mp4' %}checked{% endif %}>
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-file-play"></i>
+                  <div class="fw-semibold">MP4 Video</div>
+                  <span class="status-badge status-active ms-auto">Recommended</span>
+                </div>
+                <div class="small text-muted">Best for most devices - phones, TVs, media players</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="card option-card" data-radio-name="default_format" data-radio-value="mkv">
+              <input class="form-check-input d-none" type="radio" name="default_format" value="mkv" {% if form.default_format.data == 'mkv' %}checked{% endif %}>
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-archive"></i>
+                  <div class="fw-semibold">MKV Video</div>
+                </div>
+                <div class="small text-muted">Best for archiving - preserves tracks and subtitles</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="card option-card" data-radio-name="default_format" data-radio-value="mp3">
+              <input class="form-check-input d-none" type="radio" name="default_format" value="mp3" {% if form.default_format.data == 'mp3' %}checked{% endif %}>
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-music-note"></i>
+                  <div class="fw-semibold">MP3 Audio</div>
+                </div>
+                <div class="small text-muted">Audio only - perfect for music and podcasts</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="card option-card" data-radio-name="default_format" data-radio-value="webm">
+              <input class="form-check-input d-none" type="radio" name="default_format" value="webm" {% if form.default_format.data == 'webm' %}checked{% endif %}>
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-globe"></i>
+                  <div class="fw-semibold">WebM</div>
+                </div>
+                <div class="small text-muted">Web optimized - smaller files for online use</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div id="format-error" class="small text-danger mt-2 d-none"></div>
+      </div>
+
+      <div class="mt-4">
+        <h5 class="fw-semibold">Default Quality</h5>
+        <div class="row g-3 mt-1">
+          <div class="col-12 col-md-6">
+            <label class="card option-card" data-radio-name="default_quality" data-radio-value="best">
+              <input class="form-check-input d-none" type="radio" name="default_quality" value="best" {% if form.default_quality.data == 'best' %}checked{% endif %}>
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-star-fill"></i>
+                  <div class="fw-semibold">Best Available</div>
+                </div>
+                <div class="small text-muted">Always download the highest quality</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="card option-card" data-radio-name="default_quality" data-radio-value="1080p">
+              <input class="form-check-input d-none" type="radio" name="default_quality" value="1080p" {% if form.default_quality.data == '1080p' %}checked{% endif %}>
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-speedometer"></i>
+                  <div class="fw-semibold">Balanced (1080p)</div>
+                  <span class="status-badge status-active ms-auto">Recommended</span>
+                </div>
+                <div class="small text-muted">Great quality, reasonable size</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="card option-card" data-radio-name="default_quality" data-radio-value="720p">
+              <input class="form-check-input d-none" type="radio" name="default_quality" value="720p" {% if form.default_quality.data == '720p' %}checked{% endif %}>
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-phone"></i>
+                  <div class="fw-semibold">Mobile (720p)</div>
+                </div>
+                <div class="small text-muted">Good quality, smaller files</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="card option-card" data-radio-name="default_quality" data-radio-value="480p">
+              <input class="form-check-input d-none" type="radio" name="default_quality" value="480p" {% if form.default_quality.data == '480p' %}checked{% endif %}>
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-wifi"></i>
+                  <div class="fw-semibold">Data Saver (480p)</div>
+                </div>
+                <div class="small text-muted">Smallest files for slow connections</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div id="quality-error" class="small text-danger mt-2 d-none"></div>
+      </div>
+
+      <button class="btn btn-primary w-100 btn-lg mt-4" type="submit" data-btn-loader="true" data-loading-text="Saving...">Next Step</button>
+    </form>
+  {% elif step == 2 %}
+    <form method="post" action="/onboarding/step/2">
+      {{ form.hidden_tag() }}
+      <h2 class="h4 mb-2">Notification and Privacy Settings</h2>
+      <p class="text-muted">You can always change these in Account Settings.</p>
+
+      <div class="card mt-4">
+        <div class="card-body">
+          <div class="form-check form-switch">
+            {{ form.email_notifications(class="form-check-input", id="notify-toggle") }}
+            <label class="form-check-label" for="notify-toggle">Email notifications when downloads complete</label>
+          </div>
+          <div class="small text-muted mt-2">We will send you an email when your downloads finish.</div>
+          <div class="small text-muted">{{ current_user.email }}</div>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="form-check form-switch">
+            {{ form.anonymous_mode(class="form-check-input", id="anonymous-toggle") }}
+            <label class="form-check-label" for="anonymous-toggle">Anonymous mode - do not store URLs in history</label>
+          </div>
+          <div class="small text-muted mt-2">We store titles and metadata but not source URLs.</div>
+          <div class="small text-muted">Your downloads are never stored on our servers regardless of this setting.</div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <a class="text-muted" href="/onboarding?step=1">Back</a>
+        <button class="btn btn-primary btn-lg" type="submit" data-btn-loader="true" data-loading-text="Saving...">Next Step</button>
+      </div>
+    </form>
+  {% else %}
+    <form method="post" action="/onboarding/complete">
+      {{ form.hidden_tag() }}
+      <h2 class="h4 mb-2">You are Almost Ready</h2>
+      <p class="text-muted">Optionally install the browser extension for one click downloads.</p>
+
+      <div class="row g-3 mt-3">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-browser-chrome"></i>
+                <div class="fw-semibold">Chrome Extension</div>
+              </div>
+              <div class="small text-muted mt-2">One click download from YouTube, TikTok, and Instagram</div>
+              <ul class="small text-muted mt-3">
+                <li>Works on 200+ sites</li>
+                <li>No extra permissions needed</li>
+                <li>Auto detects media on page</li>
+              </ul>
+              <div class="d-flex gap-2 mt-3">
+                <a class="btn btn-outline-primary" href="#">Add to Chrome</a>
+                <button class="btn btn-outline-primary mark-installed-btn" id="chrome-extension" data-installed="false">Install Extension</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-browser-firefox"></i>
+                <div class="fw-semibold">Firefox Add on</div>
+              </div>
+              <div class="small text-muted mt-2">Same features as Chrome extension</div>
+              <ul class="small text-muted mt-3">
+                <li>Works on 200+ sites</li>
+                <li>No extra permissions needed</li>
+                <li>Auto detects media on page</li>
+              </ul>
+              <div class="d-flex gap-2 mt-3">
+                <a class="btn btn-outline-primary" href="#">Add to Firefox</a>
+                <button class="btn btn-outline-primary mark-installed-btn" id="firefox-extension" data-installed="false">Install Extension</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-body d-flex align-items-start gap-3">
+          <i class="bi bi-phone fs-3"></i>
+          <div>
+            <div class="fw-semibold">Add UniversalDL to Your Phone</div>
+            <div class="small text-muted">UniversalDL works as a Progressive Web App. Add it to your home screen for a native app experience.</div>
+            <div class="small text-muted mt-2">On iOS: Safari, Share, Add to Home Screen. On Android: Chrome, Menu, Add to Home Screen.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-body">
+          <div class="fw-semibold mb-2">Your Settings Summary</div>
+          <div class="small text-muted">Format: {{ onboarding_data.get('default_format', 'mp4') }}</div>
+          <div class="small text-muted">Quality: {{ onboarding_data.get('default_quality', 'best') }}</div>
+          <div class="small text-muted">Notifications: {{ 'On' if onboarding_data.get('email_notifications', True) else 'Off' }}</div>
+          <div class="small text-muted">Anonymous Mode: {{ 'On' if onboarding_data.get('anonymous_mode', False) else 'Off' }}</div>
+          <a class="small" href="/onboarding?step=1">Change</a>
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-100 btn-lg mt-4" type="submit" data-btn-loader="true" data-loading-text="Finishing Setup...">Finish Setup - Go to Dashboard</button>
+      <div class="text-center mt-2">
+        <a class="small text-muted" href="/onboarding/skip">Skip this step</a>
+      </div>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/onboarding.js') }}"></script>
+{% endblock %}

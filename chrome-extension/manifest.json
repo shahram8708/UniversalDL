@@ -1,0 +1,98 @@
+{
+  "manifest_version": 3,
+  "name": "UniversalDL — Media Downloader",
+  "short_name": "UniversalDL",
+  "version": "1.0.0",
+  "description": "Download videos, audio, and media from 200+ platforms including YouTube, TikTok, Instagram, Twitter, Reddit, Twitch, and more. Powered by UniversalDL.",
+  "icons": {
+    "16": "icons/icon16.svg",
+    "32": "icons/icon32.svg",
+    "48": "icons/icon48.svg",
+    "128": "icons/icon128.svg"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.svg",
+      "32": "icons/icon32.svg",
+      "48": "icons/icon48.svg",
+      "128": "icons/icon128.svg"
+    },
+    "default_title": "UniversalDL — Download Media"
+  },
+  "background": {
+    "service_worker": "background/service_worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://youtube.com/*",
+        "https://www.tiktok.com/*",
+        "https://www.instagram.com/*",
+        "https://twitter.com/*",
+        "https://x.com/*",
+        "https://www.reddit.com/*",
+        "https://www.twitch.tv/*",
+        "https://vimeo.com/*",
+        "https://soundcloud.com/*",
+        "https://www.bilibili.com/*",
+        "https://www.facebook.com/*",
+        "https://www.dailymotion.com/*",
+        "https://www.behance.net/*",
+        "https://imgur.com/*",
+        "https://www.coursera.org/*",
+        "https://anchor.fm/*",
+        "https://open.spotify.com/*"
+      ],
+      "js": ["content/content_script.js"],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "windows",
+    "alarms",
+    "notifications",
+    "contextMenus",
+    "downloads"
+  ],
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "https://universaldl.com/*",
+    "https://*.universaldl.com/*"
+  ],
+  "options_page": "options/options.html",
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+1",
+        "windows": "Ctrl+Shift+1",
+        "mac": "Command+Shift+1",
+        "chromeos": "Ctrl+Shift+1",
+        "linux": "Ctrl+Shift+1"
+      },
+      "description": "Open UniversalDL popup"
+    },
+    "quick_download": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+2",
+        "windows": "Ctrl+Shift+2",
+        "mac": "Command+Shift+2",
+        "chromeos": "Ctrl+Shift+2",
+        "linux": "Ctrl+Shift+2"
+      },
+      "description": "Quick download current page URL"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

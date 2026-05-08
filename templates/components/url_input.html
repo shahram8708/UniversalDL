@@ -1,0 +1,13 @@
+{% macro url_input_bar(placeholder='Paste any URL...', action='/download/analyze', button_text='Analyze', show_examples=True) %}
+  <form class="url-input-form" action="{{ action }}" method="get">
+    <div class="input-group input-group-lg">
+      <input type="url" name="url" id="url-input" class="form-control url-input-bar url-input-auto" placeholder="{{ placeholder }}" required>
+      <button class="btn url-analyze-btn" type="submit">{{ button_text }}</button>
+    </div>
+  </form>
+  {% if show_examples %}
+    <div class="small text-muted-custom mt-2">
+      Examples: YouTube, TikTok, Instagram, Reddit, Twitch
+    </div>
+  {% endif %}
+{% endmacro %}

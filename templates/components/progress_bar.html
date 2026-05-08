@@ -1,0 +1,15 @@
+{% macro progress_bar(job_id, initial_status='queued') %}
+  <div class="progress-container" data-job-id="{{ job_id }}">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <span class="status-label">{{ initial_status|capitalize }}</span>
+      <button class="btn btn-sm btn-outline-danger" type="button">Cancel</button>
+    </div>
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated progress-zero" role="progressbar">0%</div>
+    </div>
+    <div class="progress-info">
+      <span class="speed">-- MB/s</span>
+      <span class="eta">Calculating...</span>
+    </div>
+  </div>
+{% endmacro %}
