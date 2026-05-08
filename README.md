@@ -310,7 +310,7 @@ If you plan to run locally without Docker you will also need:
 1. Clone the repository.
 
 ```bash
-git clone https://github.com/your-username/UniversalDL.git
+git clone https://github.com/shahram8708/UniversalDL.git
 cd UniversalDL
 ```
 
@@ -339,7 +339,7 @@ The app will be available at `http://localhost:5000`.
 1. Clone and enter the directory.
 
 ```bash
-git clone https://github.com/your-username/UniversalDL.git
+git clone https://github.com/shahram8708/UniversalDL.git
 cd UniversalDL
 ```
 

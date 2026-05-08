@@ -1,0 +1,186 @@
+services:
+  - type: redis
+    name: universaldl-redis
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
+  - type: web
+    name: universaldl-web
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: gunicorn --workers 4 --threads 2 --worker-class gthread --bind 0.0.0.0:$PORT --timeout 120 --keepalive 5 --max-requests 1000 --max-requests-jitter 100 --access-logfile - --error-logfile - wsgi:application
+    # If you insist on run.py instead of gunicorn, use this command:
+    # dockerCommand: python run.py
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: universaldl-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: universaldl-redis
+          property: connectionString
+      - key: TEMP_DOWNLOAD_DIR
+        value: /tmp/universaldl
+      - key: MAX_FILE_AGE_SECONDS
+        value: "3600"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: APP_DOMAIN
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: MAIL_SERVER
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_DEFAULT_SENDER
+        value: noreply@universaldl.com
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: PROXY_PROVIDER_URL
+        sync: false
+      - key: PROXY_PROVIDER_KEY
+        sync: false
+      - key: PAGERDUTY_INTEGRATION_KEY
+        sync: false
+
+  - type: worker
+    name: universaldl-celery-worker
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: celery -A celery_worker.celery worker --loglevel=info --concurrency=4 -Q downloads,celery --max-tasks-per-child=50
+    autoDeploy: true
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: universaldl-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: universaldl-redis
+          property: connectionString
+      - key: TEMP_DOWNLOAD_DIR
+        value: /tmp/universaldl
+      - key: MAX_FILE_AGE_SECONDS
+        value: "3600"
+      - key: SECRET_KEY
+        sync: false
+      - key: APP_DOMAIN
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: MAIL_SERVER
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_DEFAULT_SENDER
+        value: noreply@universaldl.com
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: PROXY_PROVIDER_URL
+        sync: false
+      - key: PROXY_PROVIDER_KEY
+        sync: false
+      - key: PAGERDUTY_INTEGRATION_KEY
+        sync: false
+
+  - type: worker
+    name: universaldl-celery-beat
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: celery -A celery_worker.celery beat --loglevel=info --schedule=/tmp/celerybeat-schedule
+    autoDeploy: true
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: universaldl-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: universaldl-redis
+          property: connectionString
+      - key: TEMP_DOWNLOAD_DIR
+        value: /tmp/universaldl
+      - key: MAX_FILE_AGE_SECONDS
+        value: "3600"
+      - key: SECRET_KEY
+        sync: false
+      - key: APP_DOMAIN
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: MAIL_SERVER
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_DEFAULT_SENDER
+        value: noreply@universaldl.com
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: PROXY_PROVIDER_URL
+        sync: false
+      - key: PROXY_PROVIDER_KEY
+        sync: false
+      - key: PAGERDUTY_INTEGRATION_KEY
+        sync: false
+
+databases:
+  - name: universaldl-db
+    plan: basic-256mb
+    databaseName: universaldl
+    user: universaldl
