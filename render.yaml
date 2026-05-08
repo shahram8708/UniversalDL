@@ -33,7 +33,7 @@ services:
       - key: MAX_FILE_AGE_SECONDS
         value: "3600"
       - key: SECRET_KEY
-        generateValue: true
+        sync: false
       - key: APP_DOMAIN
         sync: false
       - key: GOOGLE_CLIENT_ID
