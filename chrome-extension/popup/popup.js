@@ -323,7 +323,7 @@ function bindEventListeners() {
       return;
     }
     const sourceUrl = currentAnalyzedUrl || currentTabUrl || "";
-    const target = `https://universaldl.com/download?url=${encodeURIComponent(sourceUrl)}`;
+    const target = `https://universaldl.onrender.com/download?url=${encodeURIComponent(sourceUrl)}`;
     chrome.tabs.create({ url: target });
     stopButtonLoading(button, { skipFeedback: true });
   });
@@ -333,13 +333,13 @@ function bindEventListeners() {
     if (!startButtonLoading(button, "Opening...")) {
       return;
     }
-    chrome.tabs.create({ url: "https://universaldl.com" });
+    chrome.tabs.create({ url: "https://universaldl.onrender.com" });
     stopButtonLoading(button, { skipFeedback: true });
   });
 
   document.getElementById("requestSupportLink").addEventListener("click", (event) => {
     event.preventDefault();
-    chrome.tabs.create({ url: "https://universaldl.com/contact" });
+    chrome.tabs.create({ url: "https://universaldl.onrender.com/contact" });
   });
 
   document.getElementById("downloadAnotherBtn").addEventListener("click", () => {

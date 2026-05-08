@@ -453,7 +453,7 @@ Allow: /docs
 Allow: /changelog
 Allow: /contact
 
-Sitemap: https://universaldl.com/sitemap.xml"""
+Sitemap: https://universaldl.onrender.com/sitemap.xml"""
     return Response(robots_content, mimetype="text/plain")
 
 

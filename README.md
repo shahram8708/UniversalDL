@@ -431,7 +431,7 @@ Copy `.env.example` to `.env` and fill in every value. Variables marked **requir
 | `PROXY_PROVIDER_URL` | Optional proxy pool API endpoint | `https://proxy.example.com/api` |
 | `PROXY_PROVIDER_KEY` | Optional proxy pool API key | `your-proxy-key` |
 | `PAGERDUTY_INTEGRATION_KEY` | Optional PagerDuty alert key | `your-pd-key` |
-| `APP_DOMAIN` | Base URL for absolute links in emails and sitemap | `https://universaldl.com` |
+| `APP_DOMAIN` | Base URL for absolute links in emails and sitemap | `https://universaldl.onrender.com` |
 
 ---
 

@@ -63,7 +63,7 @@
   ],
   "host_permissions": [
     "http://localhost:5000/*",
-    "https://universaldl.com/*",
+    "https://universaldl.onrender.com/*",
     "https://*.universaldl.com/*"
   ],
   "options_page": "options/options.html",

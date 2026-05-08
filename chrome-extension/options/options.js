@@ -451,7 +451,7 @@ function bindEventListeners() {
   });
 
   ui.openWebsiteBtn.addEventListener("click", () => {
-    chrome.tabs.create({ url: "https://universaldl.com" });
+    chrome.tabs.create({ url: "https://universaldl.onrender.com" });
   });
 }
 

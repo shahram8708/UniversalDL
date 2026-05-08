@@ -124,8 +124,8 @@ def create_app():
                     "http://127.0.0.1:5000",
                     r"http://localhost:\d+",
                     r"http://127\.0\.0\.1:\d+",
-                    "https://universaldl.com",
-                    r"https://.*\.universaldl\.com",
+                    "https://universaldl.onrender.com",
+                    r"https://.*\.universaldl\.onrender.com",
                 ],
                 "methods": ["GET", "POST", "DELETE", "OPTIONS"],
                 "allow_headers": [
@@ -143,8 +143,8 @@ def create_app():
                     "http://127.0.0.1:5000",
                     r"http://localhost:\d+",
                     r"http://127\.0\.0\.1:\d+",
-                    "https://universaldl.com",
-                    r"https://.*\.universaldl\.com",
+                    "https://universaldl.onrender.com",
+                    r"https://.*\.universaldl\.onrender.com",
                 ],
                 "methods": ["GET", "POST", "DELETE", "OPTIONS"],
                 "allow_headers": [
@@ -162,8 +162,8 @@ def create_app():
                     "http://127.0.0.1:5000",
                     r"http://localhost:\d+",
                     r"http://127\.0\.0\.1:\d+",
-                    "https://universaldl.com",
-                    r"https://.*\.universaldl\.com",
+                    "https://universaldl.onrender.com",
+                    r"https://.*\.universaldl\.onrender.com",
                 ],
                 "methods": ["GET", "POST", "DELETE", "OPTIONS"],
                 "allow_headers": [
@@ -181,8 +181,8 @@ def create_app():
                     "http://127.0.0.1:5000",
                     r"http://localhost:\d+",
                     r"http://127\.0\.0\.1:\d+",
-                    "https://universaldl.com",
-                    r"https://.*\.universaldl\.com",
+                    "https://universaldl.onrender.com",
+                    r"https://.*\.universaldl\.onrender.com",
                 ],
                 "methods": ["GET", "POST", "DELETE", "OPTIONS"],
                 "allow_headers": [
