@@ -387,10 +387,10 @@ def embed_subtitles(video_path: str, subtitle_path: str, output_path: str, embed
         if embed_mode == "soft":
             ext = os.path.splitext(output_path)[1].lstrip(".").lower()
             subtitle_codec = "mov_text" if ext == "mp4" else "srt"
+            input_video = ffmpeg.input(video_path)
+            input_subtitle = ffmpeg.input(subtitle_path)
             (
-                ffmpeg.input(video_path)
-                .input(subtitle_path)
-                .output(output_path, vcodec="copy", acodec="copy", scodec=subtitle_codec)
+                ffmpeg.output(input_video, input_subtitle, output_path, vcodec="copy", acodec="copy", scodec=subtitle_codec)
                 .overwrite_output()
                 .run(capture_stdout=True, capture_stderr=True)
             )
